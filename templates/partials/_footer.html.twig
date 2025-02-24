@@ -1,0 +1,1 @@
+<footer>VOICI LE FOOTER</footer>
