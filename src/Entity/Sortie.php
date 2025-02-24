@@ -5,8 +5,6 @@ namespace App\Entity;
 use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -21,6 +19,7 @@ class Sortie
 
     #[ORM\Column]
     private ?\DateTimeImmutable $dateHeureDebut = null;
+
 
     #[ORM\Column(nullable: true)]
     private ?int $duree = null;
@@ -61,7 +60,6 @@ class Sortie
         $this->participants = new ArrayCollection();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -88,6 +86,7 @@ class Sortie
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
+
         return $this;
     }
 
@@ -105,6 +104,7 @@ class Sortie
 
     public function getDateLimiteInscription(): ?\DateTimeImmutable
     {
+
         return $this->dateLimiteInscription;
     }
 
@@ -140,11 +140,13 @@ class Sortie
     }
 
     public function getEtat(): ?Etat
+
     {
         return $this->etat;
     }
 
     public function setEtat(?Etat $etat): static
+
     {
         $this->etat = $etat;
 
