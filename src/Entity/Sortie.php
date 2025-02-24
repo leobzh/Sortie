@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SortieRepository;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -18,22 +18,47 @@ class Sortie
     private ?string $nom = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $DateHeureDebut = null;
+    private ?\DateTimeImmutable $dateHeureDebut = null;
+
 
     #[ORM\Column(nullable: true)]
     private ?int $duree = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $DateLimiteInscription = null;
+    private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionMax = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $InfosSortie = null;
+    private ?string $infosSortie = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $etat = null;
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etat $etat = null;
+
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Lieu $lieu = null;
+
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Site $site = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Participant $organisateur = null;
+
+    /**
+     * @var Collection<int, Participant>
+     */
+    #[ORM\ManyToMany(targetEntity: Participant::class, inversedBy: 'sorties')]
+    private Collection $participants;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -54,12 +79,13 @@ class Sortie
 
     public function getDateHeureDebut(): ?\DateTimeImmutable
     {
-        return $this->DateHeureDebut;
+        return $this->dateHeureDebut;
     }
 
-    public function setDateHeureDebut(\DateTimeImmutable $DateHeureDebut): static
+    public function setDateHeureDebut(\DateTimeImmutable $dateHeureDebut): static
     {
-        $this->DateHeureDebut = $DateHeureDebut;
+        $this->dateHeureDebut = $dateHeureDebut;
+
 
         return $this;
     }
@@ -78,12 +104,13 @@ class Sortie
 
     public function getDateLimiteInscription(): ?\DateTimeImmutable
     {
-        return $this->DateLimiteInscription;
+
+        return $this->dateLimiteInscription;
     }
 
-    public function setDateLimiteInscription(\DateTimeImmutable $DateLimiteInscription): static
+    public function setDateLimiteInscription(\DateTimeImmutable $dateLimiteInscription): static
     {
-        $this->DateLimiteInscription = $DateLimiteInscription;
+        $this->dateLimiteInscription = $dateLimiteInscription;
 
         return $this;
     }
@@ -102,25 +129,88 @@ class Sortie
 
     public function getInfosSortie(): ?string
     {
-        return $this->InfosSortie;
+        return $this->infosSortie;
     }
 
-    public function setInfosSortie(?string $InfosSortie): static
+    public function setInfosSortie(?string $infosSortie): static
     {
-        $this->InfosSortie = $InfosSortie;
+        $this->infosSortie = $infosSortie;
 
         return $this;
     }
 
-    public function getEtat(): ?int
+    public function getEtat(): ?Etat
+
     {
         return $this->etat;
     }
 
-    public function setEtat(?int $etat): static
+    public function setEtat(?Etat $etat): static
+
     {
         $this->etat = $etat;
 
         return $this;
     }
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+
+        return $this;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getOrganisateur(): ?Participant
+    {
+        return $this->organisateur;
+    }
+
+    public function setOrganisateur(?Participant $organisateur): static
+    {
+        $this->organisateur = $organisateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Participant>
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(Participant $participant): static
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(Participant $participant): static
+    {
+        $this->participants->removeElement($participant);
+
+        return $this;
+    }
+
 }
