@@ -31,8 +31,8 @@ class Sortie
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateLimiteInscription = null;
 
-    #[ORM\Column]
-    private ?int $nbInscriptionMax = null;
+    //#[ORM\Column]
+    //private ?int $nbInscriptionMax = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionsMax = null;
@@ -123,17 +123,17 @@ class Sortie
         return $this;
     }
 
-    public function getNbInscriptionMax(): ?int
-    {
-        return $this->nbInscriptionMax;
-    }
+    //public function getNbInscriptionMax(): ?int
+    //{
+    //    return $this->nbInscriptionMax;
+    //}
 
-    public function setNbInscriptionMax(int $nbInscriptionMax): static
-    {
-        $this->nbInscriptionMax = $nbInscriptionMax;
+    //public function setNbInscriptionMax(int $nbInscriptionMax): static
+    //{
+    //    $this->nbInscriptionMax = $nbInscriptionMax;
 
-        return $this;
-    }
+    //    return $this;
+    //}
 
     public function getNbInscriptionsMax(): ?int
     {
