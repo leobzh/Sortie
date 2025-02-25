@@ -6,24 +6,18 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ path('app_main') }}"
-                   title="go home"
-                >Home <span class="sr-only"></span>
-                </a>
+            <li class="nav-item {% if app.request.get('_route') == 'app_main' %}active{% endif %}">
+                <a class="nav-link" href="{{ path('app_main') }}" title="go home">Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_login') }}"
-                   title="connect your account"
-                >Login
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_logout') }}"
-                   title="logout"
-                >Déconnexion
-                </a>
-            </li>
+            {% if not app.user %}
+                <li class="nav-item {% if app.request.get('_route') == 'app_login' %}active{% endif %}">
+                    <a class="nav-link" href="{{ path('app_login') }}" title="connect your account">Login</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_logout') }}" title="logout">Déconnexion</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
