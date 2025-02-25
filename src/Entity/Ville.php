@@ -3,8 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\VilleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[ORM\UniqueConstraint(columns: ['nom'])]
+#[UniqueEntity(fields: ['nom'], message: 'Une ville porte déjà ce nom !')]
 #[ORM\Entity(repositoryClass: VilleRepository::class)]
 class Ville
 {
@@ -18,6 +23,17 @@ class Ville
 
     #[ORM\Column(length: 5)]
     private ?string $codePostal = null;
+
+    /**
+     * @var Collection<int, Lieu>
+     */
+    #[ORM\OneToMany(targetEntity: Lieu::class, mappedBy: 'ville')]
+    private Collection $Lieux;
+
+    public function __construct()
+    {
+        $this->Lieux = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -44,6 +60,36 @@ class Ville
     public function setCodePostal(string $codePostal): static
     {
         $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lieu>
+     */
+    public function getLieux(): Collection
+    {
+        return $this->Lieux;
+    }
+
+    public function addLieux(Lieu $lieux): static
+    {
+        if (!$this->Lieux->contains($lieux)) {
+            $this->Lieux->add($lieux);
+            $lieux->setVille($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLieux(Lieu $lieux): static
+    {
+        if ($this->Lieux->removeElement($lieux)) {
+            // set the owning side to null (unless already changed)
+            if ($lieux->getVille() === $this) {
+                $lieux->setVille(null);
+            }
+        }
 
         return $this;
     }

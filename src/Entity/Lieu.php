@@ -15,27 +15,27 @@ class Lieu
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 30, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $rue = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     private ?float $latitude = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     private ?float $longitude = null;
+
+    #[ORM\ManyToOne(inversedBy: 'Lieux')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Ville $ville = null;
 
     /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'lieu')]
     private Collection $sorties;
-
-    #[ORM\ManyToOne(inversedBy: 'lieux')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Ville $ville = null;
 
     public function __construct()
     {
@@ -64,7 +64,7 @@ class Lieu
         return $this->rue;
     }
 
-    public function setRue(?string $rue): static
+    public function setRue(string $rue): static
     {
         $this->rue = $rue;
 
@@ -76,7 +76,7 @@ class Lieu
         return $this->latitude;
     }
 
-    public function setLatitude(?float $latitude): static
+    public function setLatitude(float $latitude): static
     {
         $this->latitude = $latitude;
 
@@ -88,9 +88,21 @@ class Lieu
         return $this->longitude;
     }
 
-    public function setLongitude(?float $longitude): static
+    public function setLongitude(float $longitude): static
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getVille(): ?Ville
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?Ville $ville): static
+    {
+        $this->ville = $ville;
 
         return $this;
     }
@@ -121,18 +133,6 @@ class Lieu
                 $sorty->setLieu(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getVille(): ?Ville
-    {
-        return $this->ville;
-    }
-
-    public function setVille(?Ville $ville): static
-    {
-        $this->ville = $ville;
 
         return $this;
     }
