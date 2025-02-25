@@ -12,18 +12,30 @@
                 >Home <span class="sr-only"></span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_login') }}"
-                   title="connect your account"
-                >Login
-                </a>
-            </li>
+
+            {% if app.user %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('app_logout') }}"
                    title="logout"
                 >Déconnexion
                 </a>
             </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_login') }}"
+                   title="Se connecter à votre compte"
+                >Login
+                </a>
+            </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_register') }}"
+                       title="Créer votre compte"
+                    >Inscription
+                    </a>
+                </li>
+
+            {% endif %}
+
         </ul>
     </div>
 </nav>

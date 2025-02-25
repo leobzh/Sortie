@@ -2,12 +2,15 @@
 
 namespace App\Form;
 
+use App\Entity\Site;
 use App\Entity\Utilisateur;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,11 +24,32 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('pseudo', TextType::class, [  // Ajout du type TextType::class
-                'label' => 'Pseudo',
+                'label' => 'Votre pseudo',
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Email address'
+                'label' => 'Votre Email addresse'
             ])
+            ->add('site', EntityType::class, [
+                'class' => Site::class, // L'entité Genre
+                'choice_label' => 'nom', // Attribut de site à afficher
+                'label' => 'Votre site de rattachement : ',
+                'expanded' => true, // Transforme le champ en cases à cocher
+                'required' => true, // Rend le champ obligatoire
+            ])
+            ->add('nom', TextType::class, [  // Ajout du type TextType::class
+                'label' => 'Votre nom',
+            ])
+            ->add('prenom', TextType::class, [  // Ajout du type TextType::class
+                'label' => 'Votre prénom',
+            ])
+            ->add('telephone', TelType::class, [  // Ajout du type TextType::class
+                'label' => 'Votre telephone',
+                'attr' => [
+                    'placeholder' => '06 12 34 56 78', // Sans indicatif
+                    'class' => 'form-control' // Pour Bootstrap
+                ]
+            ])
+
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
