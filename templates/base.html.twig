@@ -13,12 +13,16 @@
     </head>
 
     <body>
-        {# Inclusion du header #}
-        {% include 'partials/_header.html.twig' %}
+        {% if app.request.get('_route') not in ['app_sortie_creation', 'app_sortie', 'app_sortie_details', 'app_sortie_edit', 'app_sortie_participer'] %}
+            {# Inclusion du header #}
+            {% include 'partials/_header.html.twig' %}
+        {% endif %}
 
         {% block body %}{% endblock %}
 
-        {# Inclusion du footer #}
-        {% include 'partials/_footer.html.twig' %}
+        {% if app.request.get('_route') not in ['app_sortie_creation', 'app_sortie', 'app_sortie_details', 'app_sortie_edit', 'app_sortie_participer'] %}
+            {# Inclusion du footer #}
+            {% include 'partials/_footer.html.twig' %}
+        {% endif %}
     </body>
 </html>

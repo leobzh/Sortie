@@ -11,21 +11,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/fr.js"></script>
 {% endblock %}
 
-{% block title %}Créer une Sortie{% endblock %}
+{% block title %}Modifier {{ sortie.nom }}{% endblock %}
 
 {% block body %}
 <div class="example-wrapper">
-    <h1><i class="fas fa-plus-circle"></i> Créer une nouvelle Sortie</h1>
-
+    <h1><i class="fas fa-edit"></i> Modifier la sortie</h1>
+    
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i> {{ message }}
         </div>
     {% endfor %}
-
+    
     <div class="form-container">
         {{ form_start(sortieForm) }}
-
+        
         <div class="form-row">
             <div class="form-group">
                 <label for="{{ sortieForm.nom.vars.id }}">
@@ -68,6 +68,14 @@
                     <i class="fas fa-users"></i> {{ form_label(sortieForm.nbInscriptionsMax) }}
                 </label>
                 {{ form_widget(sortieForm.nbInscriptionsMax, {'attr': {'class': 'form-control', 'placeholder': 'Nombre maximum de participants'}}) }}
+                <div class="field-help">
+                    {% if sortie.participants|length > 0 %}
+                        <span class="participants-warning">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            Il y a déjà {{ sortie.participants|length }} participant(s) inscrits
+                        </span>
+                    {% endif %}
+                </div>
                 {{ form_errors(sortieForm.nbInscriptionsMax) }}
             </div>
 
@@ -88,94 +96,68 @@
             {{ form_errors(sortieForm.infosSortie) }}
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="{{ sortieForm.site.vars.id }}">
-                    <i class="fas fa-building"></i> {{ form_label(sortieForm.site) }}
-                </label>
-                {{ form_widget(sortieForm.site, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(sortieForm.site) }}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ sortieForm.organisateur.vars.id }}">
-                    <i class="fas fa-user"></i> {{ form_label(sortieForm.organisateur) }}
-                </label>
-                {{ form_widget(sortieForm.organisateur, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(sortieForm.organisateur) }}
-            </div>
-        </div>
-
-        <div class="form-group participants-section">
-            <label>
-                <i class="fas fa-user-plus"></i> {{ form_label(sortieForm.participants) }}
-            </label>
-            <div class="search-container">
-                <input type="text" id="search-participants" class="form-control" placeholder="Rechercher des participants...">
-                <i class="fas fa-search search-icon"></i>
-            </div>
-            {{ form_widget(sortieForm.participants, {'attr': {'class': 'form-check'}}) }}
-            {{ form_errors(sortieForm.participants) }}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ sortieForm.urlPhoto.vars.id }}">
-                <i class="fa-solid fa-image"></i> {{ form_label(sortieForm.urlPhoto) }}
-            </label>
-            {{ form_widget(sortieForm.urlPhoto, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(sortieForm.urlPhoto) }}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ sortieForm.etat.vars.id }}">
-                <i class="fas fa-map-marker-alt"></i> {{ form_label(sortieForm.etat) }}
-            </label>
-            {{ form_widget(sortieForm.etat, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(sortieForm.etat) }}
+        <div class="participants-section">
+            <h3><i class="fas fa-user-friends"></i> Participants actuels ({{ sortie.participants|length }})</h3>
+            
+            {% if sortie.participants|length > 0 %}
+                <div class="current-participants">
+                    {% for participant in sortie.participants %}
+                        <div class="participant-card">
+                            <div class="participant-avatar">
+                                <div class="avatar-circle">
+                                    {{ participant.prenom|first }}{{ participant.nom|first }}
+                                </div>
+                            </div>
+                            <div class="participant-info">
+                                <span class="participant-name">{{ participant.prenom }} {{ participant.nom }}</span>
+                                <span class="participant-email">{{ participant.email }}</span>
+                            </div>
+                            <a href="{{ path('app_sortie', {'sortie_id': sortie.id, 'participant_id': participant.id}) }}" 
+                               class="remove-participant" 
+                               onclick="return confirm('Voulez-vous vraiment retirer cet élève de la sortie?')">
+                                <i class="fas fa-times-circle"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-participants">Aucun participant inscrit pour le moment.</p>
+            {% endif %}
         </div>
 
         <div class="form-actions">
-            <button type="button" class="btn btn-primary" onclick="history.back()">
-                <i class="fas fa-arrow-left"></i> Retour
-            </button>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-check"></i> Créer la sortie
-            </button>
+            <div class="action-group">
+                <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer les modifications
+                </button>
+            </div>
+            
+            {% if sortie.participants|length == 0 %}
+                <a href="{{ path('app_sortie', {'id': sortie.id}) }}" 
+                   class="btn-danger"
+                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie?')">
+                    <i class="fas fa-trash-alt"></i> Supprimer la sortie
+                </a>
+            {% endif %}
         </div>
         
         {{ form_end(sortieForm) }}
     </div>
-
-    {# <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialisation de Flatpickr pour les sélecteurs de date
-            flatpickr(".datepicker", {
-                enableTime: true,
-                dateFormat: "d/m/Y H:i",
-                locale: "fr",
-                time_24hr: true
-            });
-
-            // Recherche de participants
-            const searchInput = document.getElementById('search-participants');
-            const checkboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
-            const labels = document.querySelectorAll('.form-check label');
-
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                
-                labels.forEach(label => {
-                    const text = label.textContent.toLowerCase();
-                    const checkbox = label.querySelector('input[type="checkbox"]');
-                    
-                    if (text.includes(searchTerm) || searchTerm === '') {
-                        label.style.display = 'flex';
-                    } else {
-                        label.style.display = 'none';
-                    }
-                });
-            });
-        });
-    </script> #}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialisation de Flatpickr pour les sélecteurs de date
+        flatpickr(".datepicker", {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            locale: "fr",
+            time_24hr: true
+        });
+    });
+</script>
 {% endblock %}

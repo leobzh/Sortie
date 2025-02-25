@@ -11,9 +11,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+#[Route('/sortie')]
 final class SortieController extends AbstractController
 {
-    #[Route('/sortie', name: 'app_sortie')]
+    #[Route('/', name: 'app_sortie')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $sorties = $entityManager->getRepository(Sortie::class)->findAll();
@@ -24,7 +25,7 @@ final class SortieController extends AbstractController
     }
 
     // Creation d'une sortie
-    #[Route('/sortieCreation', name: 'app_sortie_creation')]
+    #[Route('/Creation', name: 'app_sortie_creation')]
     public function creation(Request $request, EntityManagerInterface $em): Response
     {
         $sortie = new Sortie();
@@ -43,4 +44,78 @@ final class SortieController extends AbstractController
             'sortieForm' => $sortieForm->createView(),
         ]);
     }
+
+    #[Route('/{id}', name: 'app_sortie_details', methods: ['GET'])]
+    public function details(Sortie $sortie): Response
+    {
+        return $this->render('sortie/details.html.twig', [
+            'sortie' => $sortie,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_sortie_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
+        $sortieForm->handleRequest($request);
+
+        if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+            $em->flush();
+            return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
+        }
+
+        return $this->render('sortie/edit.html.twig', [
+            'sortie' => $sortie,
+            'sortieForm' => $sortieForm->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/participer', name: 'app_sortie_participer', methods: ['POST'])]
+    public function participer(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $sortie->addParticipant($user);
+        $em->flush();
+
+        return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
+    }
+
+    #[Route('/sortie/{id}/remove-participant/{userId}', name: 'app_sortie_remove_participant', methods: ['POST'])]
+    public function removeParticipant(int $id, int $userId, SortieRepository $sortieRepository, EntityManagerInterface $entityManager): Response
+    {
+        $sortie = $sortieRepository->find($id);
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if (!$sortie || !$user) {
+            throw $this->createNotFoundException('Sortie ou utilisateur introuvable.');
+        }
+
+        if ($sortie->getParticipants()->contains($user)) {
+            $sortie->removeParticipant($user);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_sortie');
+    }
+
+    #[Route('/sortie/{id}/delete', name: 'app_sortie_delete', methods: ['POST'])]
+    public function delete(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager): Response
+    {
+        $sortie = $sortieRepository->find($id);
+
+        if (!$sortie) {
+            throw $this->createNotFoundException('Sortie introuvable.');
+        }
+
+        $entityManager->remove($sortie);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_sortie');
+    }
+
 }
