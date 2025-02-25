@@ -1,1 +1,29 @@
-<header>VOICI LE HEADER</header>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">SORTIES</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ path('app_main') }}"
+                   title="go home"
+                >Home <span class="sr-only"></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_login') }}"
+                   title="connect your account"
+                >Login
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_logout') }}"
+                   title="logout"
+                >Déconnexion
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
