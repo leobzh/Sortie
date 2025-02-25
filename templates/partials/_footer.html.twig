@@ -1,5 +1,45 @@
-<footer>
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/header-footer.css') }}">
+{% endblock %}
+
+{# footer.html.twig #}
+<footer class="footer">
     <div class="container">
-        &copy; Sorties {{ "now" | date("Y") }}
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3 class="footer-title">À propos de Sortie App</h3>
+                <p>Sortie App est une plateforme de gestion d'événements et de sorties entre amis, collègues ou en famille. Créez, partagez et participez à des événements facilement.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3 class="footer-title">Liens rapides</h3>
+                <ul class="footer-links">
+                    <li><a href="{{ path('app_main') }}" class="footer-link">Accueil</a></li>
+                    <li><a href="{{ path('app_sortie') }}" class="footer-link">Sorties</a></li>
+                    <li><a href="#" class="footer-link">Événements</a></li>
+                    <li><a href="#" class="footer-link">À propos</a></li>
+                    <li><a href="#" class="footer-link">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3 class="footer-title">Contact</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Rue de l'Exemple, 75000 Paris</li>
+                    <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                    <li><i class="fas fa-envelope"></i> contact@sortieapp.fr</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; Sorties {{ "now" | date("Y") }} | Tous droits réservés</p>
+        </div>
     </div>
 </footer>
