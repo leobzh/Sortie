@@ -20,7 +20,7 @@
                     <li><a href="{{ path('app_logout') }}" class="nav-item">Déconnexion</a></li>
                 {% else %}
                     <li><a href="{{ path('app_login') }}" class="nav-item{% if app.request.get('_route') == 'app_login' %} active{% endif %}">Connexion</a></li>
-                    <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Inscription</a></li>
+                    <li><a href="{{ path('app_register') }}" class="nav-item{% if app.request.get('_route') == 'app_register' %} active{% endif %}">Inscription</a></li>
                 {% endif %}
             </ul>
         </nav>
