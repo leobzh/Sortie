@@ -16,16 +16,16 @@
 {% block body %}
 <div class="example-wrapper">
     <h1><i class="fas fa-edit"></i> Modifier la sortie</h1>
-    
+
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i> {{ message }}
         </div>
     {% endfor %}
-    
+
     <div class="form-container">
         {{ form_start(sortieForm) }}
-        
+
         <div class="form-row">
             <div class="form-group">
                 <label for="{{ sortieForm.nom.vars.id }}">
@@ -71,7 +71,7 @@
                 <div class="field-help">
                     {% if sortie.participants|length > 0 %}
                         <span class="participants-warning">
-                            <i class="fas fa-exclamation-triangle"></i> 
+                            <i class="fas fa-exclamation-triangle"></i>
                             Il y a déjà {{ sortie.participants|length }} participant(s) inscrits
                         </span>
                     {% endif %}
@@ -88,6 +88,42 @@
             </div>
         </div>
 
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ sortieForm.etat.vars.id }}">
+                    <i class="fas fa-clipboard-list"></i> {{ form_label(sortieForm.etat) }}
+                </label>
+                {{ form_widget(sortieForm.etat, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(sortieForm.etat) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ sortieForm.site.vars.id }}">
+                    <i class="fas fa-building"></i> {{ form_label(sortieForm.site) }}
+                </label>
+                {{ form_widget(sortieForm.site, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(sortieForm.site) }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ sortieForm.organisateur.vars.id }}">
+                    <i class="fas fa-user-tie"></i> {{ form_label(sortieForm.organisateur) }}
+                </label>
+                {{ form_widget(sortieForm.organisateur, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(sortieForm.organisateur) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ sortieForm.urlPhoto.vars.id }}">
+                    <i class="fas fa-image"></i> {{ form_label(sortieForm.urlPhoto) }}
+                </label>
+                {{ form_widget(sortieForm.urlPhoto, {'attr': {'class': 'form-control', 'placeholder': 'URL de la photo'}}) }}
+                {{ form_errors(sortieForm.urlPhoto) }}
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="{{ sortieForm.infosSortie.vars.id }}">
                 <i class="fas fa-info-circle"></i> {{ form_label(sortieForm.infosSortie) }}
@@ -96,9 +132,17 @@
             {{ form_errors(sortieForm.infosSortie) }}
         </div>
 
+        <div class="form-group">
+            <label for="{{ sortieForm.participants.vars.id }}">
+                <i class="fas fa-user-friends"></i> {{ form_label(sortieForm.participants) }}
+            </label>
+            {{ form_widget(sortieForm.participants, {'attr': {'class': 'form-check'}}) }}
+            {{ form_errors(sortieForm.participants) }}
+        </div>
+
         <div class="participants-section">
             <h3><i class="fas fa-user-friends"></i> Participants actuels ({{ sortie.participants|length }})</h3>
-            
+
             {% if sortie.participants|length > 0 %}
                 <div class="current-participants">
                     {% for participant in sortie.participants %}
@@ -112,8 +156,8 @@
                                 <span class="participant-name">{{ participant.prenom }} {{ participant.nom }}</span>
                                 <span class="participant-email">{{ participant.email }}</span>
                             </div>
-                            <a href="{{ path('app_sortie', {'sortie_id': sortie.id, 'participant_id': participant.id}) }}" 
-                               class="remove-participant" 
+                            <a href="{{ path('app_sortie', {'sortie_id': sortie.id, 'participant_id': participant.id}) }}"
+                               class="remove-participant"
                                onclick="return confirm('Voulez-vous vraiment retirer cet élève de la sortie?')">
                                 <i class="fas fa-times-circle"></i>
                             </a>
@@ -130,21 +174,21 @@
                 <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-secondary">
                     <i class="fas fa-times"></i> Annuler
                 </a>
-                
+
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-save"></i> Enregistrer les modifications
                 </button>
             </div>
-            
-            {% if sortie.participants|length == 0 %}
-                <a href="{{ path('app_sortie', {'id': sortie.id}) }}" 
+
+            {% if sortie.participants|length == 0 AND if sortie.organisateur == app.user %}
+                <a href="{{ path('app_sortie_remove', {'id': sortie.id}) }}"
                    class="btn-danger"
                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie?')">
                     <i class="fas fa-trash-alt"></i> Supprimer la sortie
                 </a>
             {% endif %}
         </div>
-        
+
         {{ form_end(sortieForm) }}
     </div>
 </div>

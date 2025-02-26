@@ -12,14 +12,14 @@
     <div class="sortie-details">
         <div class="sortie-header">
             <h1><i class="fas fa-calendar-check"></i> {{ sortie.nom }}</h1>
-            
+
             {% if sortie.organisateur == app.user %}
                 <div class="organizer-badge">
                     <i class="fas fa-crown"></i> Vous êtes l'organisateur
                 </div>
             {% endif %}
         </div>
-        
+
         <div class="sortie-info-cards">
             <div class="info-card">
                 <div class="info-icon">
@@ -31,7 +31,7 @@
                     <p class="info-secondary">Durée: {{ sortie.duree }} minutes</p>
                 </div>
             </div>
-            
+
             <div class="info-card">
                 <div class="info-icon">
                     <i class="fas fa-map-marker-alt"></i>
@@ -44,7 +44,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <div class="info-card">
                 <div class="info-icon">
                     <i class="fas fa-users"></i>
@@ -70,7 +70,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="sortie-description">
             <h2><i class="fas fa-info-circle"></i> Informations</h2>
             <div class="description-content">
@@ -81,7 +81,7 @@
                 {% endif %}
             </div>
         </div>
-        
+
         <div class="participants-list">
             <h2><i class="fas fa-user-friends"></i> Liste des participants</h2>
             {% if sortie.participants|length > 0 %}
@@ -99,35 +99,37 @@
                 <p class="no-participants">Personne n'est encore inscrit à cette sortie.</p>
             {% endif %}
         </div>
-        
+
         <div class="sortie-actions">
-            {% if app.user == sortie.organisateur %}
-                <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-primary">
-                    <i class="fas fa-edit"></i> Modifier
+            <div class="action-group">
+                <a href="{{ path('app_sortie') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
                 </a>
-            {% else %}
-                {% if app.user in sortie.participants %}
-                    <form action="{{ path('app_sortie_desister', {'id': sortie.id}) }}" method="post" class="action-form">
-                        <button type="submit" class="btn-secondary">
-                            <i class="fas fa-user-minus"></i> Se désister
-                        </button>
-                    </form>
-                {% elseif sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
-                    <form action="{{ path('app_sortie_participer', {'id': sortie.id}) }}" method="post" class="action-form">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-user-plus"></i> Participer
-                        </button>
-                    </form>
+
+                {% if app.user == sortie.organisateur %}
+                    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-primary">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
                 {% else %}
-                    <button disabled class="btn-disabled">
-                        <i class="fas fa-ban"></i> Inscriptions fermées
-                    </button>
+                    {% if app.user in sortie.participants %}
+                        <form action="{{ path('app_sortie_desister', {'id': sortie.id}) }}" method="post" class="action-form">
+                            <button type="submit" class="btn-secondary">
+                                <i class="fas fa-user-minus"></i> Se désister
+                            </button>
+                        </form>
+                    {% elseif sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
+                        <form action="{{ path('app_sortie_participer', {'id': sortie.id}) }}" method="post" class="action-form">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-user-plus"></i> Participer
+                            </button>
+                        </form>
+                    {% else %}
+                        <button disabled class="btn-disabled">
+                            <i class="fas fa-ban"></i> Inscriptions fermées
+                        </button>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-            
-            <a href="{{ path('app_sortie') }}" class="btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour à la liste
-            </a>
+            </div>
         </div>
     </div>
 </div>

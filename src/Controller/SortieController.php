@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Sortie;
 use App\Form\SortieCreationType;
+use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -103,7 +104,7 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('app_sortie');
     }
 
-    #[Route('/sortie/{id}/delete', name: 'app_sortie_delete', methods: ['POST'])]
+    #[Route('/sortie/{id}/delete', name: 'app_sortie_remove', methods: ['POST'])]
     public function delete(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager): Response
     {
         $sortie = $sortieRepository->find($id);

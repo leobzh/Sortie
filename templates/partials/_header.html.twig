@@ -3,32 +3,31 @@
 {% endblock %}
 
 {# header.html.twig #}
-<header class="header">
-    <div class="container">
-        <div class="header-content">
-            <a href="{{ path('app_main') }}" class="logo">
-                <i class="fas fa-calendar-alt logo-icon"></i>
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <a href="{{ path('app_main') }}">
                 <span class="logo-text">Sortie App</span>
             </a>
-
-            <nav class="nav-menu" id="nav-menu">
-                <a href="{{ path('app_main') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_main' %}active{% endif %}">Accueil</a>
-                <a href="{{ path('app_sortie') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_sortie' %}active{% endif %}">Sorties</a>
-                <a href="#" class="nav-link">Événements</a>
-                <a href="#" class="nav-link">À propos</a>
-                <a href="#" class="nav-link">Contact</a>
-            </nav>
-
-            <div class="user-menu">
+        </div>
+        <nav class="main-nav">
+            <ul class="nav-links">
+                <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Accueil</a></li>
+                <li><a href="{{ path('app_sortie') }}" class="nav-item{% if app.request.get('_route') == 'app_sortie' %} active{% endif %}">Sorties</a></li>
                 {% if app.user %}
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
+                    <li><a href="{{ path('app_sortie_creation') }}" class="nav-item{% if app.request.get('_route') == 'app_sortie_creation' %} active{% endif %}">Créer une sortie</a></li>
+                    <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Mon profil</a></li>
+                    <li><a href="{{ path('app_logout') }}" class="nav-item">Déconnexion</a></li>
                 {% else %}
-                    <a href="#" class="btn btn-outline">Connexion</a>
-                    <a href="#" class="btn btn-primary">Inscription</a>
+                    <li><a href="{{ path('app_login') }}" class="nav-item{% if app.request.get('_route') == 'app_login' %} active{% endif %}">Connexion</a></li>
+                    <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Inscription</a></li>
                 {% endif %}
-            </div>
+            </ul>
+        </nav>
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
     </div>
 </header>

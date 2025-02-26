@@ -20,9 +20,11 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  /* Supprimez ces lignes 
   display: flex;
   justify-content: center;
   align-items: center;
+  */
 }
 
 .example-wrapper {
@@ -492,6 +494,7 @@ tbody tr:hover {
   transition: var(--transition);
   border: none;
   cursor: pointer;
+  margin-top: 1.5rem;
 }
 
 .btn-secondary:hover {
@@ -597,23 +600,26 @@ tbody tr:hover {
   }
 
   .sortie-actions {
-    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
     gap: 1rem;
+    margin-top: 2rem;
   }
 
   .action-group {
     display: flex;
-    flex-direction: column;
     gap: 1rem;
     width: 100%;
   }
 
-  .btn-primary, .btn-secondary, .btn-danger {
+  .btn-primary,
+  .btn-secondary,
+  .btn-disabled {
     width: 100%;
     text-align: center;
   }
 
-  .current-participants {
-    grid-template-columns: 1fr;
+    .current-participants {
+      grid-template-columns: 1fr;
+    }
   }
-}
