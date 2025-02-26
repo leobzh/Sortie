@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block title %}{{ sortie.nom }} | Détails{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+    <div class="sortie-details">
+        <div class="sortie-header">
+            <h1><i class="fas fa-calendar-check"></i> {{ sortie.nom }}</h1>
+
+            {% if sortie.organisateur == app.user %}
+                <div class="organizer-badge">
+                    <i class="fas fa-crown"></i> Vous êtes l'organisateur
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="sortie-info-cards">
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Date et heure</h3>
+                    <p>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</p>
+                    <p class="info-secondary">Durée: {{ sortie.duree }} minutes</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Lieu</h3>
+                    <p>{{ sortie.lieu.nom }}</p>
+                    {% if sortie.lieu.rue %}
+                        <p class="info-secondary">{{ sortie.lieu.rue }}, {{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Participants</h3>
+                    <div class="participants-count">
+                        <span class="current">{{ sortie.participants|length }}</span>
+                        <span class="separator">/</span>
+                        <span class="max">{{ sortie.nbInscriptionsMax }}</span>
+                    </div>
+                    <p class="info-secondary">
+                        {% if sortie.dateLimiteInscription < date() %}
+                            <span class="closed-registration">
+                                <i class="fas fa-lock"></i> Inscriptions fermées
+                            </span>
+                        {% else %}
+                            <span class="open-registration">
+                                <i class="fas fa-lock-open"></i> Inscriptions ouvertes jusqu'au {{ sortie.dateLimiteInscription|date('d/m/Y') }}
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sortie-description">
+            <h2><i class="fas fa-info-circle"></i> Informations</h2>
+            <div class="description-content">
+                {% if sortie.infosSortie %}
+                    {{ sortie.infosSortie|nl2br }}
+                {% else %}
+                    <p class="no-info">Aucune information supplémentaire fournie par l'organisateur.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="participants-list">
+            <h2><i class="fas fa-user-friends"></i> Liste des participants</h2>
+            {% if sortie.participants|length > 0 %}
+                <div class="participant-avatars">
+                    {% for participant in sortie.participants %}
+                        <div class="participant-avatar" title="{{ participant.prenom }} {{ participant.nom }}">
+                            <div class="avatar-circle">
+                                {{ participant.prenom|first }}{{ participant.nom|first }}
+                            </div>
+                            <span class="participant-name">{{ participant.prenom }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-participants">Personne n'est encore inscrit à cette sortie.</p>
+            {% endif %}
+        </div>
+
+        <div class="sortie-actions">
+            <div class="action-group">
+                <a href="{{ path('app_sortie') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+
+                {% if app.user == sortie.organisateur %}
+                    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-primary">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                {% else %}
+                    {% if app.user in sortie.participants %}
+                        <form action="{{ path('app_sortie_remove_participant', {'id': sortie.id, 'userId': app.user.id}) }}" method="post" class="action-form">
+                            <button type="submit" class="btn-secondary">
+                                <i class="fas fa-user-minus"></i> Se désister
+                            </button>
+                        </form>
+                    {% elseif sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
+                        <form action="{{ path('app_sortie_participer', {'id': sortie.id}) }}" method="post" class="action-form">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-user-plus"></i> Participer
+                            </button>
+                        </form>
+                    {% else %}
+                        <button disabled class="btn-disabled">
+                            <i class="fas fa-ban"></i> Inscriptions fermées
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

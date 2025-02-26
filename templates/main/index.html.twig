@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/accueil.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header">
+        <h1>Bienvenue sur Sortie App</h1>
+        <p>Votre plateforme de gestion d'événements et de sorties</p>
+    </div>
+    
+    <div class="card">
+        <h2 class="card-title">À propos de Sortie App</h2>
+        <div class="card-content">
+            <p>Sortie App vous permet de créer, gérer et participer à des événements et des sorties. Que ce soit pour organiser une randonnée, une soirée cinéma ou un événement professionnel, notre application vous simplifie la vie.</p>
+        </div>
+    </div>
+    
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">📅</div>
+            <h3 class="feature-title">Gestion d'événements</h3>
+            <p class="feature-description">Créez et gérez facilement vos sorties et événements en quelques clics.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3 class="feature-title">Invitations simplifiées</h3>
+            <p class="feature-description">Invitez vos amis et suivez les participants à vos événements.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🗓️</div>
+            <h3 class="feature-title">Calendrier intégré</h3>
+            <p class="feature-description">Visualisez tous vos événements à venir dans un calendrier intuitif.</p>
+        </div>
+    </div>
+    
+    <div class="info-section">
+        <h3 class="info-title">Informations techniques</h3>
+        <ul class="info-list">
+            <li>Votre contrôleur est situé à <code>D:/WorkspacePHP-Symfony/PROJET/Sortie/src/Controller/MainController.php</code></li>
+            <li>Ce template est situé à <code>D:/WorkspacePHP-Symfony/PROJET/Sortie/templates/main/index.html.twig</code></li>
+        </ul>
+    </div>
+    
+    <div class="cta-section">
+        <a href="{{ path('app_sortie') }}" class="btn btn-primary">Voir les sorties</a>
+        <a href="#" class="btn btn-outline">En savoir plus</a>
+    </div>
+</div>
+
+<div class="cta-section"></div>
+{% endblock %}

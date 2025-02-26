@@ -31,7 +31,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, unique:true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
     #[Assert\Email(message: "L'email n'est pas valide.")]
     #[Assert\Regex(
@@ -110,7 +110,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sorties = new ArrayCollection();
         $this->isAdministrateur = false;
         $this->isActif = false;
-
     }
 
     public function getId(): ?int
@@ -232,18 +231,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephone(?string $telephone): static
     {
         $this->telephone = $telephone;
-
-        return $this;
-    }
-
-    public function getMotDePasse(): ?string
-    {
-        return $this->motDePasse;
-    }
-
-    public function setMotDePasse(string $motDePasse): static
-    {
-        $this->motDePasse = $motDePasse;
 
         return $this;
     }

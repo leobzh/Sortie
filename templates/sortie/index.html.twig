@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block title %}Liste des Sorties{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1><i class="fas fa-calendar-alt"></i> Liste des Sorties</h1>
+    
+    <div class="actions-bar">
+        <a href="{{ path('app_sortie_creation') }}" class="nav-link">
+            <i class="fas fa-plus-circle"></i> Créer une sortie
+        </a>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th><i class="fas fa-tag"></i> Nom</th>
+                <th><i class="fas fa-clock"></i> Date de début</th>
+                <th><i class="fas fa-hourglass-half"></i> Durée</th>
+                <th><i class="fas fa-map-marker-alt"></i> Lieu</th>
+                <th><i class="fas fa-user"></i> Organisateur</th>
+                <th><i class="fas fa-users"></i> Participants</th>
+                <th><i class="fas fa-cog"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sortie in sorties %}
+                <tr>
+                    <td data-label="Nom">{{ sortie.nom }}</td>
+                    <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                    <td data-label="Durée">{{ sortie.duree }} min</td>
+                    <td data-label="Lieu">{{ sortie.lieu.nom }}</td>
+                    <td data-label="Organisateur">{{ sortie.organisateur.nom }}</td>
+                    <td data-label="Participants">
+                        <span class="badge {% if sortie.participants|length >= sortie.nbInscriptionsMax %}badge-full{% endif %}">
+                            {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
+                        </span>
+                    </td>
+                    <td data-label="Actions">
+                        <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        {% if app.user == sortie.organisateur %}
+                            <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        {% endif %}
+                        {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
+                            <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-action">
+                                <i class="fas fa-user-plus"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times fa-3x"></i>
+                            <p>Aucune sortie disponible.</p>
+                            <a href="{{ path('app_sortie_creation') }}" class="nav-link">
+                                <i class="fas fa-plus-circle"></i> Créer la première sortie
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

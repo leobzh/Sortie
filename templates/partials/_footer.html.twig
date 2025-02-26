@@ -1,0 +1,60 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/header-footer.css') }}">
+{% endblock %}
+
+{# footer.html.twig #}
+<footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-info">
+            <div class="footer-logo">
+                <span class="footer-logo-text">Sortie App</span>
+            </div>
+            <p class="footer-description">Votre plateforme de gestion d'événements et de sorties</p>
+        </div>
+        
+        <div class="footer-links">
+            <div class="footer-links-column">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="{{ path('app_main') }}">Accueil</a></li>
+                    <li><a href="{{ path('app_sortie') }}">Sorties</a></li>
+                    {% if is_granted('ROLE_USER') %}
+                        <li><a href="{{ path('app_sortie_creation') }}">Créer une sortie</a></li>
+                        <li><a href="{{ path('app_main') }}">Mon profil</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        <li><a href="{{ path('app_main') }}">Inscription</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="footer-links-column">
+                <h4>Ressources</h4>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Conditions d'utilisation</a></li>
+                    <li><a href="#">Politique de confidentialité</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>&copy; {{ "now"|date("Y") }} Sortie App. Tous droits réservés.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+    });
+</script>
