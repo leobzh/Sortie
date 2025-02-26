@@ -112,7 +112,7 @@
                     </a>
                 {% else %}
                     {% if app.user in sortie.participants %}
-                        <form action="{{ path('app_sortie_desister', {'id': sortie.id}) }}" method="post" class="action-form">
+                        <form action="{{ path('app_sortie_remove_participant', {'id': sortie.id, 'userId': app.user.id}) }}" method="post" class="action-form">
                             <button type="submit" class="btn-secondary">
                                 <i class="fas fa-user-minus"></i> Se désister
                             </button>

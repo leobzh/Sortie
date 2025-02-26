@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Sortie;
+use App\Entity\Utilisateur;
 use App\Form\SortieCreationType;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +43,7 @@ final class SortieController extends AbstractController
         }
 
         return $this->render('sortie/creation.html.twig', [
-            'sortieForm' => $sortieForm->createView(),
+            'sortieForm' => $sortieForm,
         ]);
     }
 
@@ -61,17 +62,31 @@ final class SortieController extends AbstractController
         $sortieForm->handleRequest($request);
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+            // Handle participants checkboxes
+            $participants = $sortieForm->get('participants')->getData();
+            foreach ($sortie->getParticipants() as $participant) {
+                if (!$participants->contains($participant)) {
+                    $sortie->removeParticipant($participant);
+                }
+            }
+            foreach ($participants as $participant) {
+                if (!$sortie->getParticipants()->contains($participant)) {
+                    $sortie->addParticipant($participant);
+                }
+            }
+
             $em->flush();
             return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
         }
 
         return $this->render('sortie/edit.html.twig', [
             'sortie' => $sortie,
-            'sortieForm' => $sortieForm->createView(),
+            'sortieForm' => $sortieForm,
         ]);
     }
 
-    #[Route('/{id}/participer', name: 'app_sortie_participer', methods: ['POST'])]
+
+    #[Route('/{id}/participer', name: 'app_sortie_participer', methods: ['GET', 'POST'])]
     public function participer(Sortie $sortie, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
@@ -90,7 +105,7 @@ final class SortieController extends AbstractController
     public function removeParticipant(int $id, int $userId, SortieRepository $sortieRepository, EntityManagerInterface $entityManager): Response
     {
         $sortie = $sortieRepository->find($id);
-        $user = $entityManager->getRepository(User::class)->find($userId);
+        $user = $entityManager->getRepository(Utilisateur::class)->find($userId);
 
         if (!$sortie || !$user) {
             throw $this->createNotFoundException('Sortie ou utilisateur introuvable.');
@@ -101,10 +116,11 @@ final class SortieController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_sortie');
+        return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
     }
 
-    #[Route('/sortie/{id}/delete', name: 'app_sortie_remove', methods: ['POST'])]
+
+    #[Route('/sortie/{id}/delete', name: 'app_sortie_remove', methods: ['GET', 'POST'])]
     public function delete(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager): Response
     {
         $sortie = $sortieRepository->find($id);
