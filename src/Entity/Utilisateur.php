@@ -32,6 +32,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique:true)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "L'email n'est pas valide.")]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9._%+-]+@campus-eni\.fr$/",
+        message: "L'email doit se terminer par @campus-eni.fr."
+    )]
     private ?string $email = null;
 
     /**

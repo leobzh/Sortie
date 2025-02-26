@@ -27,7 +27,7 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Votre pseudo',
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Votre Email addresse'
+                'label' => 'Votre adresse email (VOTRE_IDENTITE@campus-eni.fr obligatoire)'
             ])
             ->add('site', EntityType::class, [
                 'class' => Site::class, // L'entité Genre
@@ -43,7 +43,8 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Votre prénom',
             ])
             ->add('telephone', TelType::class, [  // Ajout du type TextType::class
-                'label' => 'Votre telephone',
+                'required' => false, // Le champ n'est pas obligatoire
+                'label' => 'Votre téléphone',
                 'attr' => [
                     'placeholder' => '06 12 34 56 78', // Sans indicatif
                     'class' => 'form-control' // Pour Bootstrap
