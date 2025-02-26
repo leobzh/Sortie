@@ -34,8 +34,8 @@ class Sortie
     #[ORM\Column]
     private ?int $nbInscriptionMax = null;
 
-    #[ORM\Column]
-    private ?int $nbInscriptionsMax = null;
+    //#[ORM\Column]
+    //private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $infosSortie = null;
@@ -135,17 +135,17 @@ class Sortie
         return $this;
     }
 
-    public function getNbInscriptionsMax(): ?int
-    {
-        return $this->nbInscriptionsMax;
-    }
+    //public function getNbInscriptionsMax(): ?int
+    //{
+    //    return $this->nbInscriptionsMax;
+    //}
 
-    public function setNbInscriptionsMax(int $nbInscriptionsMax): static
-    {
-        $this->nbInscriptionsMax = $nbInscriptionsMax;
+    //public function setNbInscriptionsMax(int $nbInscriptionsMax): static
+    //{
+    //    $this->nbInscriptionsMax = $nbInscriptionsMax;
 
-        return $this;
-    }
+    //    return $this;
+    //}
 
     public function getInfosSortie(): ?string
     {
