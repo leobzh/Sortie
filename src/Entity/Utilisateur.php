@@ -9,16 +9,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé par un autre utilisateur')]
 
 #[ORM\UniqueConstraint(columns: ['pseudo'])]
-#[UniqueEntity(fields: ['pseudo'], message: 'This pseudo is already used by another user')]
+#[UniqueEntity(fields: ['pseudo'], message: 'Ce pseudo est déjà utilisé par un autre utilisateur')]
 
 #[ORM\UniqueConstraint(columns: ['telephone'])]
-#[UniqueEntity(fields: ['telephone'], message: 'This telephone is already used by another user')]
+#[UniqueEntity(fields: ['telephone'], message: 'Ce téléphone est déjà attribué à un autre utilisateur')]
 
 
 
@@ -29,7 +31,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, unique:true)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "L'email n'est pas valide.")]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9._%+-]+@campus-eni\.fr$/",
+        message: "L'email doit se terminer par @campus-eni.fr."
+    )]
     private ?string $email = null;
 
     /**
@@ -45,21 +53,36 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 30, unique: true)]
+    #[Assert\NotBlank(message: "Le pseudo est obligatoire.")]
+    #[Assert\Length(
+        min: 4,
+        minMessage: "Le pseudo doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 30)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(
+        min: 1,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
+    #[Assert\Length(
+        min: 1,
+        minMessage: "Le prénom doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 10, unique: true, nullable: true)]
     private ?string $telephone = null;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private ?bool $isAdministrateur = null;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private ?bool $isActif = null;
 
     /**
@@ -78,10 +101,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Site $site = null;
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
     public function __construct()
     {
         $this->sortiesOrganisees = new ArrayCollection();
         $this->sorties = new ArrayCollection();
+        $this->isAdministrateur = false;
+        $this->isActif = false;
     }
 
     public function getId(): ?int
@@ -207,18 +235,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMotDePasse(): ?string
-    {
-        return $this->motDePasse;
-    }
-
-    public function setMotDePasse(string $motDePasse): static
-    {
-        $this->motDePasse = $motDePasse;
-
-        return $this;
-    }
-
     public function isAdministrateur(): ?bool
     {
         return $this->isAdministrateur;
@@ -308,6 +324,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

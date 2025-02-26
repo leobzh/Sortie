@@ -33,10 +33,6 @@ class Site
     #[ORM\OneToMany(targetEntity: Utilisateur::class, mappedBy: 'site')]
     private Collection $utilisateurs;
 
-    /**
-     * @var Collection<int, Participant>
-     */
-
 
     public function __construct()
     {
@@ -92,14 +88,14 @@ class Site
     }
 
     /**
-     * @return Collection<int, Participant>
+     * @return Collection<int, Utilisateur>
      */
     public function getUtilisateurs(): Collection
     {
         return $this->utilisateurs;
     }
 
-    public function addUtilisateur(Participant $utilisateur): static
+    public function addUtilisateur(Utilisateur $utilisateur): static
     {
         if (!$this->utilisateurs->contains($utilisateur)) {
             $this->utilisateurs->add($utilisateur);
@@ -109,7 +105,7 @@ class Site
         return $this;
     }
 
-    public function removeUtilisateur(Participant $utilisateur): static
+    public function removeUtilisateur(Utilisateur $utilisateur): static
     {
         if ($this->utilisateurs->removeElement($utilisateur)) {
             // set the owning side to null (unless already changed)
