@@ -24,6 +24,14 @@
                 >Déconnexion
                 </a>
             </li>
+            {% if is_granted('ROLE_ADMIN') %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_ville_index') }}"
+                   title="logout"
+                >Ville
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
