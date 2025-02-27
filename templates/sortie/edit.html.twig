@@ -4,6 +4,24 @@
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <style>
+        .sound-toggle {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .sound-toggle input {
+            display: none;
+        }
+        .sound-toggle-icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        .sound-label {
+            font-size: 0.9em;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
@@ -23,8 +41,14 @@
         </div>
     {% endfor %}
 
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
     <div class="form-container">
-        {{ form_start(sortieForm) }}
+        {{ form_start(sortieForm, {'attr': {'id': 'sortieForm'}}) }}
 
         <div class="form-row">
             <div class="form-group">
@@ -142,6 +166,13 @@
 
         <div class="participants-section">
             <h3><i class="fas fa-user-friends"></i> Participants actuels ({{ sortie.participants|length }})</h3>
+            
+            <!-- Sound toggle switch -->
+            <label class="sound-toggle">
+                <input type="checkbox" id="soundToggle" checked>
+                <i class="fas fa-volume-up sound-toggle-icon" id="soundIcon"></i>
+                <span class="sound-label">Son activé</span>
+            </label>
 
             {% if sortie.participants|length > 0 %}
                 <div class="current-participants">
@@ -157,14 +188,14 @@
                                 <span class="participant-email">{{ participant.email }}</span>
                             </div>
                             {% if sortie.organisateur == app.user %}
-                                <form action="{{ path('app_sortie_remove_participant', {'id': sortie.id, 'userId': participant.id}) }}" method="post" class="action-form">
-                                    <button type="submit" class="remove-participant" onclick="playSound()">
+                                <form action="{{ path('app_sortie_remove_participant', {'id': sortie.id, 'userId': participant.id}) }}" method="post" class="action-form" id="removeForm-{{ participant.id }}">
+                                    <button type="button" class="remove-participant" onclick="handleRemoveParticipant({{ participant.id }}, '{{ path('app_sortie_remove_participant', {'id': sortie.id, 'userId': participant.id}) }}')">
                                         <i class="fas fa-times-circle"></i>
                                     </button>
                                 </form>
                             {% endif %}
                         </div>
-                    {% endfor %}
+                    {% endfor %}    
                 </div>
             {% else %}
                 <p class="no-participants">Aucun participant inscrit pour le moment.</p>
@@ -177,17 +208,15 @@
                     <i class="fas fa-times"></i> Annuler
                 </a>
 
-                <button type="submit" class="btn-primary">
+                <button type="submit" id="saveButton" class="btn-primary">
                     <i class="fas fa-save"></i> Enregistrer les modifications
                 </button>
             </div>
 
             {% if sortie.organisateur == app.user %}
-                <a href="{{ path('app_sortie_remove', {'id': sortie.id}) }}"
-                   class="btn-danger"
-                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie?')">
+                <button type="button" id="deleteButton" class="btn-danger" onclick="handleDeleteSortie('{{ path('app_sortie_remove', {'id': sortie.id}) }}')">
                     <i class="fas fa-trash-alt"></i> Supprimer la sortie
-                </a>
+                </button>
             {% endif %}
         </div>
 
@@ -199,9 +228,101 @@
 <audio id="kickSound" src="{{ asset('sounds/kick.mp3') }}" preload="auto"></audio>
 
 <script>
-    function playSound() {
-        const audio = document.getElementById('kickSound');
-        audio.play();
+    // Initialisation des datepickers avec Flatpickr
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".datepicker", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            locale: "fr",
+            allowInput: true,
+            time_24hr: true
+        });
+        
+        // Gestion du toggle son
+        const soundToggle = document.getElementById('soundToggle');
+        const soundIcon = document.getElementById('soundIcon');
+        const soundLabel = soundToggle.nextElementSibling.nextElementSibling;
+        
+        // Set initial state
+        updateSoundIcon();
+        
+        // Toggle sound on/off when checkbox is clicked
+        soundToggle.addEventListener('change', function() {
+            updateSoundIcon();
+        });
+        
+        function updateSoundIcon() {
+            if (soundToggle.checked) {
+                soundIcon.className = 'fas fa-volume-up sound-toggle-icon';
+                soundLabel.textContent = 'Son activé';
+            } else {
+                soundIcon.className = 'fas fa-volume-mute sound-toggle-icon';
+                soundLabel.textContent = 'Son désactivé';
+            }
+        }
+        
+        // Gérer la soumission du formulaire pour s'assurer qu'il fonctionne correctement
+        const saveButton = document.getElementById('saveButton');
+        const sortieForm = document.getElementById('sortieForm');
+        
+        saveButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Prévenir la soumission par défaut
+            
+            // Soumettre le formulaire manuellement
+            sortieForm.submit();
+        });
+    });
+    
+    // Fonction pour jouer le son et attendre qu'il soit terminé avant de rediriger
+    function playSound(callback) {
+        const soundToggle = document.getElementById('soundToggle');
+        if (soundToggle && soundToggle.checked) {
+            const audio = document.getElementById('kickSound');
+            audio.currentTime = 0;
+            
+            // Ajouter un événement qui s'exécute lorsque le son est terminé
+            audio.onended = function() {
+                if (callback) callback();
+            };
+            
+            // Gérer le cas où le son ne peut pas être joué
+            audio.onerror = function() {
+                console.log("Erreur de lecture audio");
+                if (callback) callback();
+            };
+            
+            // Jouer le son
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Erreur de lecture audio:", error);
+                    if (callback) callback();
+                });
+            }
+        } else {
+            // Si le son est désactivé, exécuter immédiatement le callback
+            if (callback) callback();
+        }
+    }
+    
+    // Fonction pour gérer la suppression d'un participant avec le son
+    function handleRemoveParticipant(participantId, formAction) {
+        playSound(function() {
+            // Créer et soumettre un formulaire
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = formAction;
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+    
+    // Fonction pour gérer la suppression de la sortie
+    function handleDeleteSortie(deleteUrl) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette sortie?')) {
+            window.location.href = deleteUrl;
+        }
     }
 </script>
 {% endblock %}
