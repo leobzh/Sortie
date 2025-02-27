@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ parent() }} • DashBoardAdmin • Importation de fichier{% endblock %}
+
+
+{% block body %}
+
+    {% include 'admin/partials/_header.html.twig' %}
+
+    <h2>Importer des utilisateurs en masse par importation de fichier</h2>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <form action="{{ path('admin_import_users') }}" method="POST" enctype="multipart/form-data">
+        <p><input type="file" name="csv_file" accept=".csv" required></p>
+        <p><button type="submit" class="btn btn-warning">Importer le fichier .csv</button></p>
+    </form><br/>
+    <code><p>Format du CSV attendu :</p>
+
+        <p>
+            email,roles,password,pseudo,nom,prenom,<br>
+            test1@campus-eni.fr,ROLE_USER,test11,pseudo1,prenom1,nom1,4<br>
+            test2@campus-eni.fr,ROLE_ADMIN,test22,pseudo2,prenom2,nom2,5
+        </p>
+
+    </code>
+{% endblock %}
