@@ -3,76 +3,237 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css">
+    <style>
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .toggle-btn {
+            background: var(--light-grey);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .toggle-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .toggle-btn:hover:not(.active) {
+            background: #e0e0e0;
+        }
+        .view-container {
+            display: none;
+        }
+        .view-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        #calendar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        .calendar-event {
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            background: var(--primary);
+            color: white;
+        }
+    </style>
 {% endblock %}
 
 {% block title %}Liste des Sorties{% endblock %}
 
 {% block body %}
+    <div class="example-wrapper">
+        <h1><i class="fas fa-calendar-alt"></i> Liste des Sorties</h1>
 
-<div class="example-wrapper">
-    <h1><i class="fas fa-calendar-alt"></i> Liste des Sorties</h1>
-    
-    <div class="actions-bar">
-        <a href="{{ path('app_sortie_creation') }}" class="nav-link">
-            <i class="fas fa-plus-circle"></i> Créer une sortie
-        </a>
-    </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th><i class="fas fa-tag"></i> Nom</th>
-                <th><i class="fas fa-clock"></i> Date de début</th>
-                <th><i class="fas fa-hourglass-half"></i> Durée</th>
-                <th><i class="fas fa-map-marker-alt"></i> Lieu</th>
-                <th><i class="fas fa-user"></i> Organisateur</th>
-                <th><i class="fas fa-users"></i> Participants</th>
-                <th><i class="fas fa-cog"></i> Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for sortie in sorties %}
-                <tr>
-                    <td data-label="Nom">{{ sortie.nom }}</td>
-                    <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
-                    <td data-label="Durée">{{ sortie.duree }} min</td>
-                    <td data-label="Lieu">{{ sortie.lieu.nom }}</td>
-                    <td data-label="Organisateur">{{ sortie.organisateur.nom }}</td>
-                    <td data-label="Participants">
-                        <span class="badge {% if sortie.participants|length >= sortie.nbInscriptionsMax %}badge-full{% endif %}">
-                            {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
-                        </span>
-                    </td>
-                    <td data-label="Actions">
-                        <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        {% if app.user == sortie.organisateur %}
-                            <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        {% endif %}
-                        {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
-                            <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-action">
-                                <i class="fas fa-user-plus"></i>
-                            </a>
-                        {% endif %}
-                    </td>
-                </tr>
+        <div class="sortie-header">
+            <a href="{{ path('app_sortie_creation') }}" class="nav-link">
+                <i class="fas fa-plus-circle"></i> Créer une sortie
+            </a>
+
+            <div class="view-toggle">
+                <button class="toggle-btn active" data-view="table">
+                    <i class="fas fa-table"></i> Tableau
+                </button>
+                <button class="toggle-btn" data-view="calendar">
+                    <i class="fas fa-calendar-alt"></i> Calendrier
+                </button>
+            </div>
+        </div>
+
+        {# Table View #}
+        <div id="table-view" class="view-container active">
+            {% if sorties|length > 0 %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-tag"></i> Nom</th>
+                            <th><i class="fas fa-clock"></i> Date de début</th>
+                            <th><i class="fas fa-hourglass-half"></i> Durée</th>
+                            <th><i class="fas fa-map-marker-alt"></i> Lieu</th>
+                            <th><i class="fas fa-user"></i> Organisateur</th>
+                            <th><i class="fas fa-users"></i> Participants</th>
+                            <th><i class="fas fa-cog"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sortie in sorties %}
+                            <tr>
+                                <td data-label="Nom">{{ sortie.nom }}</td>
+                                <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                                <td data-label="Durée">{{ sortie.duree }} min</td>
+                                <td data-label="Lieu">{{ sortie.lieu.nom }}</td>
+                                <td data-label="Organisateur">{{ sortie.organisateur.nom }}</td>
+                                <td data-label="Participants">
+                                    <span class="badge {% if sortie.participants|length >= sortie.nbInscriptionsMax %}badge-full{% endif %}">
+                                        {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
+                                    </span>
+                                </td>
+                                <td data-label="Actions">
+                                    <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if app.user == sortie.organisateur %}
+                                        <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
+                                        <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-action">
+                                            <i class="fas fa-user-plus"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
-                <tr>
-                    <td colspan="7" style="text-align: center;">
-                        <div class="empty-state">
-                            <i class="fas fa-calendar-times fa-3x"></i>
-                            <p>Aucune sortie disponible.</p>
-                            <a href="{{ path('app_sortie_creation') }}" class="nav-link">
-                                <i class="fas fa-plus-circle"></i> Créer la première sortie
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times fa-3x"></i>
+                    <p>Aucune sortie disponible.</p>
+                    <a href="{{ path('app_sortie_creation') }}" class="nav-link">
+                        <i class="fas fa-plus-circle"></i> Créer la première sortie
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        {# Calendar View #}
+        <div id="calendar-view" class="view-container">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    {% block javascripts %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let calendar;
+
+                // View toggle functionality
+                const toggleBtns = document.querySelectorAll('.toggle-btn');
+                const viewContainers = document.querySelectorAll('.view-container');
+
+                toggleBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const targetView = this.getAttribute('data-view');
+
+                        // Update buttons
+                        toggleBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+
+                        // Update views
+                        viewContainers.forEach(vc => vc.classList.remove('active'));
+                        document.getElementById(`${targetView}-view`).classList.add('active');
+
+                        // Initialize calendar if not already done
+                        if (targetView === 'calendar' && !calendar) {
+                            initializeCalendar();
+                        }
+                    });
+                });
+
+                function initializeCalendar() {
+                    const calendarEl = document.getElementById('calendar');
+
+                    // Make sure the calendar element exists before trying to initialize
+                    if (!calendarEl) {
+                        console.error('Calendar element not found');
+                        return;
+                    }
+
+                    // Try to access the FullCalendar global object
+                    if (typeof FullCalendar === 'undefined') {
+                        console.error('FullCalendar library not loaded properly');
+
+                        // Load FullCalendar dynamically if it's not available
+                        const script = document.createElement('script');
+                        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js';
+                        script.onload = initializeCalendarAfterLoad;
+                        document.head.appendChild(script);
+                        return;
+                    }
+
+                    createCalendar();
+                }
+
+                function initializeCalendarAfterLoad() {
+                    console.log('FullCalendar loaded dynamically');
+                    createCalendar();
+                }
+
+                function createCalendar() {
+                    const calendarEl = document.getElementById('calendar');
+                    calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,listMonth'
+                        },
+                        events: [
+                            {% for sortie in sorties %}
+                            {
+                                title: '{{ sortie.nom }}',
+                                start: '{{ sortie.dateHeureDebut|date('Y-m-d\\TH:i:s') }}',
+                                url: '{{ path('app_sortie_details', {'id': sortie.id}) }}',
+                                extendedProps: {
+                                    organisateur: '{{ sortie.organisateur.nom }}',
+                                    lieu: '{{ sortie.lieu.nom }}',
+                                    participants: '{{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}'
+                                }
+                            }{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        ],
+                        eventClassNames: 'calendar-event',
+                        eventDidMount: function(info) {
+                            // Add tooltip with additional information
+                            const tooltip = document.createElement('div');
+                            tooltip.innerHTML = `
+                                <strong>${info.event.title}</strong><br>
+                                Lieu: ${info.event.extendedProps.lieu}<br>
+                                Organisateur: ${info.event.extendedProps.organisateur}<br>
+                                Participants: ${info.event.extendedProps.participants}
+                            `;
+                        }
+                    });
+                    calendar.render();
+                }
+            });
+        </script>
+    {% endblock %}
 {% endblock %}

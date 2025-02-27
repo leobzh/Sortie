@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Entity\Utilisateur;
 use App\Form\SortieCreationType;
@@ -93,10 +94,29 @@ final class SortieController extends AbstractController
             return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
         }
 
-        return $this->render('sortie/details.html.twig', [
+        return $this->render('sortie/edit.html.twig', [
             'sortie' => $sortie,
             'sortieForm' => $sortieForm,
         ]);
+    }
+
+    #[Route('/{id}/archive', name: 'app_sortie_archive', methods: ['GET', 'POST'])]
+    public function archive(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        // Récupérer l'état "archivé" depuis la base de données
+        $etatArchive = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Archivé']);
+
+        if (!$etatArchive) {
+            throw $this->createNotFoundException('État "Archivé" non trouvé.');
+        }
+
+        // Mettre à jour l'état de la sortie
+        $sortie->setEtat($etatArchive);
+        $em->persist($sortie);
+        $em->flush();
+
+        $this->addFlash('success', 'La sortie a bien été archivée.');
+        return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
     }
 
 
