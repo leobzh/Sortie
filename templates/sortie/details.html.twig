@@ -3,54 +3,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css">
-    <style>
-        .view-toggle {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-        .toggle-btn {
-            background: var(--light-grey);
-            border: none;
-            padding: 0.5rem 1rem;
-            margin: 0 0.5rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .toggle-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-        .toggle-btn:hover:not(.active) {
-            background: #e0e0e0;
-        }
-        .view-container {
-            display: none;
-        }
-        .view-container.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        #calendar {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-        .calendar-event {
-            padding: 5px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            cursor: pointer;
-            background: var(--primary);
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 {% endblock %}
 
 {% block title %}{{ sortie.nom }} | Détails{% endblock %}
@@ -82,7 +35,9 @@
 
             <div class="info-card">
                 <div class="info-icon">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <a href="https://www.google.com/maps?q={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </a>
                 </div>
                 <div class="info-content">
                     <h3>Lieu</h3>
@@ -116,6 +71,13 @@
                         {% endif %}
                     </p>
                 </div>
+            </div>
+        </div>
+
+        <div class="sortie-description">
+            <h2><i class="fas fa-info-circle"></i> Lieu de la sortie</h2>
+            <div class="description-content">
+                <div id="map" style="height: 400px"></div>
             </div>
         </div>
 
@@ -184,102 +146,14 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let calendar;
-
-            // View toggle functionality
-            const toggleBtns = document.querySelectorAll('.toggle-btn');
-            const viewContainers = document.querySelectorAll('.view-container');
-
-            toggleBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const targetView = this.getAttribute('data-view');
-
-                    // Update buttons
-                    toggleBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // Update views
-                    viewContainers.forEach(vc => vc.classList.remove('active'));
-                    document.getElementById(`${targetView}-view`).classList.add('active');
-
-                    // Initialize calendar if not already done
-                    if (targetView === 'calendar' && !calendar) {
-                        initializeCalendar();
-                    }
-                });
-            });
-
-            function initializeCalendar() {
-                const calendarEl = document.getElementById('calendar');
-
-                // Make sure the calendar element exists before trying to initialize
-                if (!calendarEl) {
-                    console.error('Calendar element not found');
-                    return;
-                }
-
-                // Try to access the FullCalendar global object
-                if (typeof FullCalendar === 'undefined') {
-                    console.error('FullCalendar library not loaded properly');
-
-                    // Load FullCalendar dynamically if it's not available
-                    const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js';
-                    script.onload = initializeCalendarAfterLoad;
-                    document.head.appendChild(script);
-                    return;
-                }
-
-                createCalendar();
-            }
-
-            function initializeCalendarAfterLoad() {
-                console.log('FullCalendar loaded dynamically');
-                createCalendar();
-            }
-
-            function createCalendar() {
-                const calendarEl = document.getElementById('calendar');
-                calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,listMonth'
-                    },
-                    events: [
-                        {% for sortie in sorties %}
-                        {
-                            title: '{{ sortie.nom }}',
-                            start: '{{ sortie.dateHeureDebut|date('Y-m-d\\TH:i:s') }}',
-                            url: '{{ path('app_sortie_details', {'id': sortie.id}) }}',
-                            extendedProps: {
-                                organisateur: '{{ sortie.organisateur.nom }}',
-                                lieu: '{{ sortie.lieu.nom }}',
-                                participants: '{{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}'
-                            }
-                        }{% if not loop.last %},{% endif %}
-                        {% endfor %}
-                    ],
-                    eventClassNames: 'calendar-event',
-                    eventDidMount: function(info) {
-                        // Add tooltip with additional information
-                        const tooltip = document.createElement('div');
-                        tooltip.innerHTML = `
-                            <strong>${info.event.title}</strong><br>
-                            Lieu: ${info.event.extendedProps.lieu}<br>
-                            Organisateur: ${info.event.extendedProps.organisateur}<br>
-                            Participants: ${info.event.extendedProps.participants}
-                        `;
-                        // Use tooltip library if available, or you can implement a custom one
-                        // This is just a placeholder for the tooltip implementation
-                    }
-                });
-                calendar.render();
-            }
-        });
+        var lat = {{ latitude|default(sortie.lieu.latitude) }};
+        var lng = {{ longitude|default(sortie.lieu.longitude) }};
+        var adresse = "<strong><center>{{ sortie.lieu.nom }}</center></strong><br />Rue : {{ sortie.lieu.nom }}<br />Ville : {{ sortie.lieu.ville.nom }} ({{ sortie.lieu.ville.codePostal }})<br />";
+    </script>
+    <script src="{{ asset('js/leaflet.js') }}">
     </script>
 {% endblock %}
