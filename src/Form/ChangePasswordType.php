@@ -14,14 +14,15 @@ class ChangePasswordType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('old_password', PasswordType::class, [
-                'label' => 'Mot de passe actuel',
-            ])
             ->add('new_password', PasswordType::class, [
                 'label' => 'Nouveau mot de passe',
+                'mapped' => false, // Indique que ce champ ne sera pas mappé à l'entité Utilisateur
+                'attr' => ['autocomplete' => 'new-password'],
             ])
             ->add('confirm_password', PasswordType::class, [
-                'label' => 'Confirmer le nouveau mot de passe',
+                'label' => 'Confirmer le mot de passe',
+                'mapped' => false, // Ce champ aussi ne sera pas mappé à l'entité Utilisateur
+                'attr' => ['autocomplete' => 'new-password'],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Changer le mot de passe',
