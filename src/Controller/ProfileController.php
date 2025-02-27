@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\PasswordHasher\Hasher\PasswordHasherInterface;
-
+//use Symfony\Component\Security\Core\Password\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class ProfileController extends AbstractController
 {
     #[Route(path:"/profile", name:"profile_index")]
@@ -61,7 +61,7 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profile/change-password', name: 'profile_change_password')]
-     public function changePassword(Request $request, EntityManagerInterface $entityManager): Response
+    public function changePassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
@@ -88,8 +88,10 @@ class ProfileController extends AbstractController
                 return $this->redirectToRoute('profile_change_password');
             }
 
+            $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
+
             // Mettre à jour le mot de passe de l'utilisateur (sans le hacher)
-            $user->setPassword($newPassword);
+            $user->setPassword($hashedPassword);
 
             // Persister les modifications
             $entityManager->persist($user);
