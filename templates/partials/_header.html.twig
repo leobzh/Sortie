@@ -13,7 +13,9 @@
         <nav class="main-nav">
             <ul class="nav-links">
                 {% if(is_granted('ROLE_ADMIN')) %}
+
                     <li><a href="{{ path('admin_dashboard') }}">{ Dashboard ADMIN }</a></li>
+
                 {% endif %}
                 <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Accueil</a></li>
                 <li><a href="{{ path('app_sortie') }}" class="nav-item{% if app.request.get('_route') == 'app_sortie' %} active{% endif %}">Sorties</a></li>
