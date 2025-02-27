@@ -1,0 +1,29 @@
+{# templates/profile/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+    <h1>Mon Profil</h1>
+
+    {# Affichage des informations de l'utilisateur #}
+    <div class="profile-info">
+        <p><strong>Pseudo :</strong> {{ app.user.pseudo }}</p>
+        <p><strong>Nom :</strong> {{ app.user.nom }}</p>
+        <p><strong>Prénom :</strong> {{ app.user.prenom }}</p>
+        <p><strong>Téléphone :</strong> {{ app.user.telephone ? app.user.telephone : 'Non renseigné' }}</p>
+    </div>
+
+    {# Affichage des messages flash (ex: succès ou erreur) #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="actions">
+        <a href="{{ path('profile_edit') }}" class="btn btn-primary">Modifier mon profil</a>
+        <a href="{{ path('profile_change_password') }}" class="btn btn-secondary">Changer mon mot de passe</a>
+    </div>
+{% endblock %}
