@@ -60,7 +60,7 @@
                         <span class="max">{{ sortie.nbInscriptionsMax }}</span>
                     </div>
                     <p class="info-secondary">
-                        {% if sortie.dateLimiteInscription < date() %}
+                        {% if sortie.dateLimiteInscription < date() or sortie.participants|length == sortie.nbInscriptionsMax %}
                             <span class="closed-registration">
                                 <i class="fas fa-lock"></i> Inscriptions fermées
                             </span>
