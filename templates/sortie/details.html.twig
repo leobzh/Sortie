@@ -3,6 +3,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 {% endblock %}
 
 {% block title %}{{ sortie.nom }} | Détails{% endblock %}
@@ -34,7 +35,9 @@
 
             <div class="info-card">
                 <div class="info-icon">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <a href="https://www.google.com/maps?q={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </a>
                 </div>
                 <div class="info-content">
                     <h3>Lieu</h3>
@@ -68,6 +71,13 @@
                         {% endif %}
                     </p>
                 </div>
+            </div>
+        </div>
+
+        <div class="sortie-description">
+            <h2><i class="fas fa-info-circle"></i> Lieu de la sortie</h2>
+            <div class="description-content">
+                <div id="map" style="height: 400px"></div>
             </div>
         </div>
 
@@ -133,4 +143,17 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <script>
+        var lat = {{ latitude|default(sortie.lieu.latitude) }};
+        var lng = {{ longitude|default(sortie.lieu.longitude) }};
+        var adresse = "<strong><center>{{ sortie.lieu.nom }}</center></strong><br />Rue : {{ sortie.lieu.nom }}<br />Ville : {{ sortie.lieu.ville.nom }} ({{ sortie.lieu.ville.codePostal }})<br />";
+    </script>
+    <script src="{{ asset('js/leaflet.js') }}">
+    </script>
 {% endblock %}
