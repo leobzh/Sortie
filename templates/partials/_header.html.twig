@@ -22,6 +22,8 @@
                 {% if app.user %}
                     <li><a href="{{ path('app_sortie_creation') }}" class="nav-item{% if app.request.get('_route') == 'app_sortie_creation' %} active{% endif %}">Créer une sortie</a></li>
                     <li><a href="{{ path('app_ville_index') }}" class="nav-item{% if app.request.get('_route') == 'app_ville_index' %} active{% endif %}">Ville</a></li>
+                    <li><a href="{{ path('app_lieu_index') }}" class="nav-item{% if app.request.get('_route') == 'app_lieu_index' %} active{% endif %}">Lieu</a></li>
+
                     <li><a href="{{ path('profile_index') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Mon profil</a></li>
                     <li><a href="{{ path('app_logout') }}" class="nav-item">Déconnexion</a></li>
                 {% else %}
