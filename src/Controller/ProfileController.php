@@ -10,11 +10,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-//use Symfony\Component\Security\Core\Password\UserPasswordHasherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
 class ProfileController extends AbstractController
 {
     #[Route(path:"/profile", name:"profile_index")]
@@ -33,10 +32,10 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profile/edit', name: 'profile_edit')]
-    public function edit(Request $request, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $user = $this->getUser(); // Récupère l'utilisateur connecté
-        
+
         // Vérifier que l'utilisateur est connecté
         if (!$user) {
             $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
@@ -47,9 +46,28 @@ class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persiste l'utilisateur et applique les changements en base de données
-            $entityManager->persist($user); // Persister l'entité
-            $entityManager->flush(); // Sauvegarder les modifications en base de données
+            // Récupérer le fichier téléchargé
+            $profileImage = $form->get('profileImage')->getData();
+
+            if ($profileImage) {
+                // Générer un nom unique pour l'image
+                $originalFilename = pathinfo($profileImage->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);  // Utiliser un slug pour sécuriser le nom du fichier
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $profileImage->guessExtension();
+
+                // Déplacer le fichier téléchargé dans le répertoire cible
+                $profileImage->move(
+                    $this->getParameter('profile_images_directory'), // Récupérer le paramètre du répertoire d'upload
+                    $newFilename
+                );
+
+                // Mettre à jour l'entité avec le nom du fichier
+                $user->setProfileImage($newFilename);
+            }
+
+            // Persister l'utilisateur et appliquer les changements en base de données
+            $entityManager->persist($user);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Votre profil a été mis à jour avec succès !');
             return $this->redirectToRoute('profile_index');
@@ -109,6 +127,7 @@ class ProfileController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    
 }
 
 

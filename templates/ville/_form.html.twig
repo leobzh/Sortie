@@ -1,4 +1,8 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-primary">{{ button_label|default('Sauvegarder') }}</button>
-{{ form_end(form) }}
+
+    {{ form_start(form) }}
+        {{ form_row(form.nom, {'attr': {'class': 'form-control w-auto'}}) }}
+        {{ form_row(form.codePostal, {'attr': {'class': 'form-control w-auto'}}) }}
+    <div class="btn-container">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i></button>
+    </div>
+        {{ form_end(form) }}

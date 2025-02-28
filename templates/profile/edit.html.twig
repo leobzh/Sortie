@@ -27,7 +27,7 @@
     {% endfor %}
 
     {# Formulaire de modification du profil #}
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {{ form_start(form) }}
 
         <div class="mb-3">
@@ -52,6 +52,12 @@
             {{ form_label(form.telephone) }}
             {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
             {{ form_errors(form.telephone) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.profileImage) }}
+            {{ form_widget(form.profileImage, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.profileImage) }}
         </div>
 
         <div class="mb-3">

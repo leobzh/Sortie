@@ -1,5 +1,5 @@
 
 <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette ville ?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
-    <button class="btn btn-danger">Supprimer</button>
+    <button class="btn-action"><i class="fas fa-fw fa-trash"></i></button>
 </form>

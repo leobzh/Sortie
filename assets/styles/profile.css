@@ -163,6 +163,44 @@ label {
     color: var(--danger-color);
 }
 
+.profile-image-container {
+    width: 125px;
+    /* Taille de l'avatar */
+    height: 125px;
+    overflow: hidden;
+    /* Pour éviter que l'image dépasse du conteneur */
+    border-radius: 50%;
+    /* Rendre l'image circulaire */
+    margin-right: 1.5rem;
+    /* Espacement à droite de l'image */
+    display: inline-block;
+}
+
+.profile-image {
+    width: 100%;
+    /* L'image couvre tout le conteneur */
+    height: 100%;
+    object-fit: cover;
+    /* Maintenir l'image dans un carré sans déformation */
+    border-radius: 50%;
+    /* Rendre l'image elle-même circulaire */
+}
+
+/* Affichage des infos du profil et de l'image côte à côte */
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-info p {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.profile-info p strong {
+    font-weight: bold;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .profile-container {

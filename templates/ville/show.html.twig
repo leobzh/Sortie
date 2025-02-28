@@ -1,11 +1,18 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/showVille.css') }}">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
+{% endblock %}
+
 {% block title %}Ville{% endblock %}
 
 {% block body %}
+    <div class="page-ville">
     <h1>Ville</h1>
 
-    <table class="table">
+    <table class="table table-bordered">
         <tbody>
             <tr>
                 <th>Nom</th>
@@ -17,10 +24,10 @@
             </tr>
         </tbody>
     </table>
-
-    <a href="{{ path('app_ville_index') }}" class="btn btn-light">Retour à la liste</a>
-    <br>
-    <a href="{{ path('app_ville_edit', {'id': ville.id}) }}" class="btn btn-warning">Modifier</a>
-
-    {{ include('ville/_delete_form.html.twig') }}
+        <div class="btn-container">
+            <a href="{{ path('app_ville_index') }}" class="btn-action"><i class="fas fa-fw fa-arrow-left"></i></a>
+            <a href="{{ path('app_ville_edit', {'id': ville.id}) }}" class="btn-action"><i class="fas fa-fw fa-edit"></i></a>
+            {{ include('ville/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}
