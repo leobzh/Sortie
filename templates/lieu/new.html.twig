@@ -2,34 +2,54 @@
 
 {% block title %}New Lieu{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Ajouter dans la section <head> de ton fichier HTML/Twig -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+{% endblock %}
+
 {% block body %}
-    <h1>Create new Lieu</h1>
+    <p></p>
+    <div class="container">
+        <div class="row">
+            <!-- Formulaire -->
+            <div class="col-md-6">
+                <h1>Créer un nouveau lieu</h1>
 
-    {{ form_start(form) }}
-    {{ form_row(form.nom) }}
+                {{ form_start(form) }}
+                {{ form_row(form.nom, { 'label': false }) }}
 
-    {# Champ pour l'autocomplétion sous le champ "Nom du lieu" #}
-    <div>
-        {{ form_label(form.autocomplete) }}
-        {{ form_widget(form.autocomplete) }}
+                <div>
+                    {{ form_label(form.autocomplete, false) }}
+                    {{ form_widget(form.autocomplete) }}
+                </div>
+
+                {{ form_row(form.rue, { 'label': false }) }}
+                {{ form_row(form.latitude, { 'label': false }) }}
+                {{ form_row(form.longitude, { 'label': false }) }}
+                {{ form_row(form.ville_nom, { 'label': false }) }}
+                {{ form_row(form.code_postal, { 'label': false }) }}
+
+                <!-- Bouton Création sous la carte -->
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Je crée ce lieu !</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+
+            <!-- Carte Leaflet à droite -->
+            <div class="col-md-6">
+                <div id="map" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
     </div>
 
-    {{ form_row(form.rue) }}
-    {{ form_row(form.latitude) }}
-    {{ form_row(form.longitude) }}
-    {{ form_row(form.ville_nom) }}
-    {{ form_row(form.code_postal) }}
-
-    <button type="submit">Créer</button>
-    {{ form_end(form) }}
-
-
-
-    <a href="{{ path('app_lieu_index') }}">back to list</a>
+    <a href="{{ path('app_lieu_index') }}">Back to list</a>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/autocomplete.js') }}"></script>
-
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 {% endblock %}

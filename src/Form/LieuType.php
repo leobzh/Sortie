@@ -23,26 +23,26 @@ class LieuType extends AbstractType
                 'attr' => ['id' => 'lieu_autocomplete', 'placeholder' => 'Commencez à taper l\'adresse...'],
             ])
             ->add('rue', TextType::class, [
-                'label' => "Rue : ",
-                'attr' => ['readonly' => true], // Champ en lecture seule
+
+                'attr' => ['readonly' => true, 'hidden' => true], // Champ en lecture seule
             ])
             ->add('latitude', TextType::class, [
-                'label' => "Latitude : ",
-                'attr' => ['readonly' => true], // Champ en lecture seule
+
+                'attr' => ['readonly' => true, 'hidden' => true], // Champ en lecture seule
             ])
             ->add('longitude', TextType::class, [
-                'label' => "Longitude : ",
-                'attr' => ['readonly' => true], // Champ en lecture seule
+
+                'attr' => ['readonly' => true, 'hidden' => true], // Champ en lecture seule
             ])
             ->add('ville_nom', TextType::class, [
-                'label' => "Ville : ",
+
                 'mapped' => false, // Ce champ n'est pas directement lié à l'entité
-                'attr' => ['readonly' => true], // Champ en lecture seule
+                'attr' => ['readonly' => true, 'hidden' => true], // Champ en lecture seule
             ])
             ->add('code_postal', TextType::class, [
-                'label' => "Code Postal : ",
+
                 'mapped' => false, // Ce champ n'est pas directement lié à l'entité
-                'attr' => ['readonly' => true], // Champ en lecture seule
+                'attr' => ['readonly' => true, 'hidden' => true], // Champ en lecture seule
             ]);
     }
 

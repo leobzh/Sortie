@@ -1,14 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     const inputAutocomplete = document.getElementById("lieu_autocomplete");
-    const selectAdresse = document.createElement("div");  // Utilisation d'un div au lieu d'un select
-    selectAdresse.id = "adresse-results"; // ID unique pour la liste des résultats
-    selectAdresse.style.display = "none"; // Initialement caché
-    selectAdresse.style.position = "absolute"; // Positionnement absolu pour l'affichage des résultats
-    selectAdresse.style.backgroundColor = "white"; // Fond blanc
-    selectAdresse.style.border = "1px solid #ccc"; // Bordure légère pour la séparation
-    selectAdresse.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)"; // Ombre pour donner un peu de profondeur
-    selectAdresse.style.width = inputAutocomplete.offsetWidth + "px"; // Largeur du même niveau que le champ de saisie
-    inputAutocomplete.parentNode.appendChild(selectAdresse); // Ajouter la div dans le DOM
+    const selectAdresse = document.createElement("div");
+    selectAdresse.id = "adresse-results";
+    selectAdresse.style.display = "none";
+    selectAdresse.style.position = "absolute";
+    selectAdresse.style.backgroundColor = "white";
+    selectAdresse.style.border = "1px solid #ccc";
+    selectAdresse.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)";
+    selectAdresse.style.width = inputAutocomplete.offsetWidth + "px";
+    inputAutocomplete.parentNode.appendChild(selectAdresse);
 
     // Sélection des champs existants
     const inputRue = document.getElementById("lieu_rue");
@@ -17,12 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputVilleNom = document.getElementById("lieu_ville_nom");
     const inputCodePostal = document.getElementById("lieu_code_postal");
 
+    // Initialiser la carte Leaflet
+    const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris comme position par défaut
+
+    // Ajouter une couche de tuiles (par exemple, OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let marker = null; // Marqueur pour la carte, à mettre à jour lors de la sélection d'une adresse
+
     // Fonction pour rechercher une adresse avec l'API BAN
     inputAutocomplete.addEventListener("input", async () => {
         const query = inputAutocomplete.value.trim();
         if (query.length < 3) {
-            selectAdresse.innerHTML = "";  // Efface les résultats si moins de 3 caractères
-            selectAdresse.style.display = "none";  // Cache la liste
+            selectAdresse.innerHTML = "";
+            selectAdresse.style.display = "none";
             return;
         }
 
@@ -30,11 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5`);
             const data = await response.json();
 
-            // Effacer les anciens résultats
             selectAdresse.innerHTML = "";
-            selectAdresse.style.display = "block";  // Afficher la liste des résultats
+            selectAdresse.style.display = "block";
 
-            // Ajouter les résultats dans la liste
             data.features.forEach((feature) => {
                 const resultItem = document.createElement("div");
                 resultItem.classList.add("result-item");
@@ -45,10 +53,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 resultItem.dataset.ville = feature.properties.city || "";
                 resultItem.dataset.code_postal = feature.properties.postcode || "";
 
-                // Ajouter l'élément dans la liste
+                // Ajout de la classe CSS pour le survol et le curseur
+                resultItem.style.padding = "8px";
+                resultItem.style.cursor = "pointer";
+                resultItem.style.borderBottom = "1px solid #ddd";
+
+                // Effet de survol
+                resultItem.addEventListener("mouseover", () => {
+                    resultItem.style.backgroundColor = "#f0f0f0";
+                });
+                resultItem.addEventListener("mouseout", () => {
+                    resultItem.style.backgroundColor = "white";
+                });
+
                 selectAdresse.appendChild(resultItem);
 
-                // Ajouter un écouteur d'événement pour la sélection d'un résultat
+                // Sélectionner l'adresse au clic
                 resultItem.addEventListener("click", () => {
                     inputAutocomplete.value = resultItem.textContent;
                     inputRue.value = resultItem.dataset.rue;
@@ -57,23 +77,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     inputVilleNom.value = resultItem.dataset.ville;
                     inputCodePostal.value = resultItem.dataset.code_postal;
 
-                    selectAdresse.style.display = "none";  // Fermer la liste après la sélection
-                });
+                    selectAdresse.style.display = "none"; // Fermer la liste après la sélection
 
-                // Modifier le curseur pour indiquer la possibilité de cliquer
-                resultItem.style.cursor = "pointer";  // Curseur en forme de main (pointer)
+                    // Mettre à jour le marqueur et la position de la carte
+                    const latitude = parseFloat(resultItem.dataset.latitude);
+                    const longitude = parseFloat(resultItem.dataset.longitude);
 
-                // Ajouter un effet de survol pour la sélection visuelle
-                resultItem.style.padding = "8px";
-                resultItem.style.borderBottom = "1px solid #ddd";  // Ajout d'une bordure légère
-                resultItem.style.transition = "background-color 0.3s";  // Transition douce pour le changement de couleur de fond
+                    // Si un marqueur existe déjà, on le met à jour, sinon on en crée un nouveau
+                    if (marker) {
+                        marker.setLatLng([latitude, longitude]);
+                    } else {
+                        marker = L.marker([latitude, longitude]).addTo(map);
+                    }
 
-                // Effet de survol
-                resultItem.addEventListener("mouseenter", () => {
-                    resultItem.style.backgroundColor = "#f0f0f0";  // Changer la couleur de fond au survol
-                });
-                resultItem.addEventListener("mouseleave", () => {
-                    resultItem.style.backgroundColor = "";  // Réinitialiser la couleur de fond
+                    // Centrer la carte sur la nouvelle position
+                    map.setView([latitude, longitude], 13);
                 });
             });
 
