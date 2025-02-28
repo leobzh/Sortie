@@ -97,7 +97,7 @@
                 {{ form_errors(sortieForm.site) }}
             </div>
 
-            <div class="form-group">
+            <div class="form-organisateur">
                 <label for="{{ sortieForm.organisateur.vars.id }}">
                     <i class="fas fa-user"></i> {{ form_label(sortieForm.organisateur) }}
                 </label>
@@ -146,15 +146,15 @@
         {{ form_end(sortieForm) }}
     </div>
 
-    {# <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialisation de Flatpickr pour les sélecteurs de date
-            flatpickr(".datepicker", {
-                enableTime: true,
-                dateFormat: "d/m/Y H:i",
-                locale: "fr",
-                time_24hr: true
-            });
+            //flatpickr(".datepicker", {
+            //    enableTime: true,
+            //    dateFormat: "d/m/Y H:i",
+            //    locale: "fr",
+            //    time_24hr: true
+            //});
 
             // Recherche de participants
             const searchInput = document.getElementById('search-participants');
@@ -176,6 +176,6 @@
                 });
             });
         });
-    </script> #}
+    </script>
 </div>
 {% endblock %}
