@@ -2,9 +2,15 @@
 
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/profile.css') }}">
+{% endblock %}
+
 {% block title %}Mon Profil{% endblock %}
 
 {% block body %}
+<div class="profile-container">
     <h1>Mon Profil</h1>
 
     {# Affichage des informations de l'utilisateur #}
@@ -26,4 +32,5 @@
         <a href="{{ path('profile_edit') }}" class="btn btn-primary">Modifier mon profil</a>
         <a href="{{ path('profile_change_password') }}" class="btn btn-secondary">Changer mon mot de passe</a>
     </div>
+</div>
 {% endblock %}
