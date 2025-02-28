@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/formVille.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
+{% endblock %}
+
 {% block title %}New Ville{% endblock %}
 
 {% block body %}
+<div class="form-container">
     <h1>Create new Ville</h1>
 
     {{ include('ville/_form.html.twig') }}
-
-    <a href="{{ path('app_ville_index') }}" class="btn btn-light">Retour à la liste</a>
+    <div class="btn-container">
+        <a href="{{ path('app_ville_index') }}" class="btn btn-light"><i class="fas fa-arrow-left"></i></a>
+    </div>
+</div>
 {% endblock %}
