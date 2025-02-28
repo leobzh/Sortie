@@ -2,9 +2,15 @@
 
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/profile.css') }}">
+{% endblock %}
+
 {% block title %}Mon Profil{% endblock %}
 
 {% block body %}
+<div class="profile-container">
     <h1>Mon Profil</h1>
 
     {# Affichage des informations de l'utilisateur #}
@@ -13,6 +19,11 @@
         <p><strong>Nom :</strong> {{ app.user.nom }}</p>
         <p><strong>Prénom :</strong> {{ app.user.prenom }}</p>
         <p><strong>Téléphone :</strong> {{ app.user.telephone ? app.user.telephone : 'Non renseigné' }}</p>
+        
+        {# Affichage de l'image de profil #}
+        <div class="profile-image-container">
+            <img src="{{ asset('uploads/profile_images/' ~ (app.user.profileImage ?: 'default-profile.png')) }}" alt="Image de profil" class="profile-image" />
+        </div>
     </div>
 
     {# Affichage des messages flash (ex: succès ou erreur) #}
@@ -26,4 +37,5 @@
         <a href="{{ path('profile_edit') }}" class="btn btn-primary">Modifier mon profil</a>
         <a href="{{ path('profile_change_password') }}" class="btn btn-secondary">Changer mon mot de passe</a>
     </div>
+</div>
 {% endblock %}
