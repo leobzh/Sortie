@@ -3,10 +3,13 @@
 {% block title %}Détails du participant{% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/detailUtilisateur.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
 {% endblock %}
 
 {% block body %}
-<section class="vh-100" style="background-color: #f4f5f7;">
+<div class="container">
+    <section class="vh-100">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col col-lg-6 mb-4 mb-lg-0">
@@ -46,9 +49,13 @@
                                         <p class="text-muted">{{ utilisateur.telephone }}</p>
                                     </div>
                                 </div>
+                                {% if sortieId %}
                                 <div class="d-flex justify-content-start">
-                                    <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn btn-primary">Retour</a>
+                                    <a href="{{ path('app_sortie_details', {id: sortieId}) }}" class="btn btn-primary">Retour</a>
+                                    {% else %}
+                                    <a href="{{ path('app_sortie') }}" class="btn btn-primary">Retour</a>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -57,4 +64,5 @@
         </div>
     </div>
 </section>
+</div>
 {% endblock %}
