@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Utilisateur;
+use App\Repository\SortieRepository;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,17 +15,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[isGranted('ROLE_USER')]
 final class UtilisateurController extends AbstractController
 {
-    #[Route('/list', name: 'list')]
-    public function index(EntityManagerInterface $em): Response
-    {
-        return $this->render('utilisateur/index.html.twig', [
-            'title' => 'Liste des utilisateurs',
-            'utilisateurs' => $em->getRepository(Utilisateur::class)->findAll(),
-        ]);
-    }
-
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(int $id, UtilisateurRepository $utilisateurRepository): Response
+    public function show(int $id, UtilisateurRepository $utilisateurRepository, SortieRepository $sortieRepository): Response
     {
         $utilisateur = $utilisateurRepository->find($id);
 
@@ -33,11 +25,12 @@ final class UtilisateurController extends AbstractController
             return $this->redirectToRoute('utilisateur_list');
         }
 
-
+        $sortie = $sortieRepository->findOneBy(['participants' => $utilisateur]);
 
         return $this->render('utilisateur/show.html.twig', [
             'title' => 'Detail utilisateur',
             'utilisateur' => $utilisateur,
+            'sortie' => $sortie
         ]);
     }
 }
