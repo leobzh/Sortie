@@ -5,7 +5,31 @@
 {% block body %}
     <h1>Create new Lieu</h1>
 
-    {{ include('lieu/_form.html.twig') }}
+    {{ form_start(form) }}
+    {{ form_row(form.nom) }}
+
+    {# Champ pour l'autocomplétion sous le champ "Nom du lieu" #}
+    <div>
+        {{ form_label(form.autocomplete) }}
+        {{ form_widget(form.autocomplete) }}
+    </div>
+
+    {{ form_row(form.rue) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+    {{ form_row(form.ville_nom) }}
+    {{ form_row(form.code_postal) }}
+
+    <button type="submit">Créer</button>
+    {{ form_end(form) }}
+
+
 
     <a href="{{ path('app_lieu_index') }}">back to list</a>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/autocomplete.js') }}"></script>
+
 {% endblock %}

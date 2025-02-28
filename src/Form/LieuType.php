@@ -3,8 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Lieu;
-use App\Entity\Ville;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,25 +14,35 @@ class LieuType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'label' => "Donnez un nom à votre lieu : ",
+                'label' => "Nom du lieu : ",
+            ])
+            // Champ pour l'autocomplétion (sous le champ nom)
+            ->add('autocomplete', TextType::class, [
+                'label' => "Adresse (auto-complétion) : ",
+                'mapped' => false, // Ce champ n'est pas directement lié à l'entité
+                'attr' => ['id' => 'lieu_autocomplete', 'placeholder' => 'Commencez à taper l\'adresse...'],
             ])
             ->add('rue', TextType::class, [
                 'label' => "Rue : ",
-                'attr' => ['id' => 'adresse'], // Ajout d'un ID pour cibler l'input avec JavaScript
+                'attr' => ['readonly' => true], // Champ en lecture seule
             ])
             ->add('latitude', TextType::class, [
                 'label' => "Latitude : ",
-                'attr' => ['id' => 'latitude'], // ID pour lier au JavaScript
+                'attr' => ['readonly' => true], // Champ en lecture seule
             ])
             ->add('longitude', TextType::class, [
                 'label' => "Longitude : ",
-                'attr' => ['id' => 'longitude'], // ID pour lier au JavaScript
+                'attr' => ['readonly' => true], // Champ en lecture seule
             ])
-            ->add('ville', EntityType::class, [
-                'class' => Ville::class,
-                'choice_label' => function (Ville $ville) {
-                    return $ville->getNom() . ' (' . $ville->getCodePostal() . ')';
-                },
+            ->add('ville_nom', TextType::class, [
+                'label' => "Ville : ",
+                'mapped' => false, // Ce champ n'est pas directement lié à l'entité
+                'attr' => ['readonly' => true], // Champ en lecture seule
+            ])
+            ->add('code_postal', TextType::class, [
+                'label' => "Code Postal : ",
+                'mapped' => false, // Ce champ n'est pas directement lié à l'entité
+                'attr' => ['readonly' => true], // Champ en lecture seule
             ]);
     }
 
