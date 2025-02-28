@@ -212,5 +212,4 @@ final class SortieController extends AbstractController
 
         return $this->redirectToRoute('app_sortie');
     }
-
 }

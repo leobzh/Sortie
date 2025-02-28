@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du participant{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/detailUtilisateur.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <section class="vh-100">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-white"
+                             style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                 alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
+                            <h5>{{ utilisateur.pseudo }}</h5>
+                            {# ajout ici sit_id, voir comment faire #}
+                            <i class="far fa-edit mb-5"></i>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h6>Information</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1">
+                                    <div class="col-6 mb-3">
+                                        <h6>Nom</h6>
+                                        <p class="text-muted">{{ utilisateur.nom }}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6>Prénom</h6>
+                                        <p class="text-muted">{{ utilisateur.prenom }}</p>
+                                    </div>
+                                </div>
+                                <h6>Contact</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1">
+                                    <div class="col-6 mb-3">
+                                        <h6>Mail</h6>
+                                        <p class="text-muted">{{ utilisateur.email }}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6>Telephone</h6>
+                                        <p class="text-muted">{{ utilisateur.telephone }}</p>
+                                    </div>
+                                </div>
+                                {% if sortieId %}
+                                <div class="d-flex justify-content-start">
+                                    <a href="{{ path('app_sortie_details', {id: sortieId}) }}" class="btn btn-primary">Retour</a>
+                                    {% else %}
+                                    <a href="{{ path('app_sortie') }}" class="btn btn-primary">Retour</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+{% endblock %}

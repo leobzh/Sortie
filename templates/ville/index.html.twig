@@ -1,11 +1,18 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/showVille.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
+{% endblock %}
+
 {% block title %}Ville index{% endblock %}
 
 {% block body %}
+    <div class="page-ville">
     <h1>Ville</h1>
 
-    <table class="table">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Nom</th>
@@ -19,8 +26,10 @@
                 <td>{{ ville.nom }}</td>
                 <td>{{ ville.codePostal }}</td>
                 <td>
-                    <a href="{{ path('app_ville_show', {'id': ville.id}) }}" class="btn btn-primary">Détail</a>
-                    <a href="{{ path('app_ville_edit', {'id': ville.id}) }}" class="btn btn-warning">Modifier</a>
+                    <div class="btn-container">
+                        <a href="{{ path('app_ville_show', {'id': ville.id}) }}" class="btn-action"><i class="fas fa-eye"></i></a>
+                        <a href="{{ path('app_ville_edit', {'id': ville.id}) }}" class="btn-action"><i class="fas fa-edit"></i></a>
+                    </div>
                 </td>
             </tr>
         {% else %}
@@ -31,5 +40,7 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_ville_new') }}"class="btn btn-success">Create new</a>
+                <a href="{{ path('app_ville_new') }}"class="btn btn-success">Create new</a>
+
+        </div>
 {% endblock %}
