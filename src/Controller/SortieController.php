@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Site;
 use App\Entity\Sortie;
 use App\Entity\Utilisateur;
 use App\Form\SortieCreationType;
+use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +20,54 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/sortie')]
 final class SortieController extends AbstractController
 {
-    #[Route('/', name: 'app_sortie')]
-    public function index(EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_sortie', methods: ['GET', 'POST'])]
+    public function recherche(Request $request, SortieRepository $sortiesRepository, SiteRepository $siteRepository): Response
     {
-        $sorties = $entityManager->getRepository(Sortie::class)->findAll();
+        $sites = $siteRepository->findAll();
+        $selectedSiteId = $request->request->get('site'); // ID du site via POST (ou '' pour "Tous les sites")
+        $nom = $request->request->get('nom'); // Nom via POST
+        $dateHeureDebut = $request->request->get('dateHeureDebut'); // Date début via POST
+        $dateLimiteInscription = $request->request->get('dateLimiteInscription'); // Date limite via POST
+        $isOrganisateur = $request->request->get('isOrganisateur');
+        $isInscrit = (bool)$request->request->get('isInscrit');
+        $isNotInscrit = (bool)$request->request->get('isNotInscrit');
+        $isEnded = (bool)$request->request->get('isEnded');
+
+
+
+        // Construire les critères dynamiquement
+        $criteria = [];
+        if ($selectedSiteId) {
+            $criteria['site'] = (int)$selectedSiteId; // Convertir en int pour Doctrine
+        }
+        if($isOrganisateur) {
+            $criteria['organisateur'] = $this->getUser(); // YG : on passe l'id du connected user
+        }
+
+
+        // Appliquer les filtres si au moins un critère ou filtre manuel est défini
+        if (!empty($criteria) || $nom || $dateHeureDebut || $dateLimiteInscription || $isInscrit || $isNotInscrit || $isEnded) {
+            $sorties = $sortiesRepository->findByFilters($isInscrit, $isNotInscrit, $isEnded, $nom, $dateHeureDebut, $dateLimiteInscription, $criteria);
+
+        } else {
+            // Par défaut, toutes les sorties si pas de filtre
+            $sorties = $sortiesRepository->findAll();
+        }
+
 
         return $this->render('sortie/index.html.twig', [
-            'sorties' => $sorties
+            'sorties' => $sorties,
+            'sites' => $sites,
+            'selectedSiteId' => $selectedSiteId,
+            'nom' => $nom,
+            'dateHeureDebut' => $dateHeureDebut,
+            'dateLimiteInscription' => $dateLimiteInscription,
+            'isOrganisateur' => $isOrganisateur,
+            'isInscrit' => $isInscrit,
+            'isNotInscrit' => $isNotInscrit,
+            'isEnded' => $isEnded,
+
+
         ]);
     }
 
