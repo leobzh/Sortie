@@ -2,9 +2,15 @@
 
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/profile.css') }}">
+{% endblock %}
+
 {% block title %}Modifier mon profil{% endblock %}
 
 {% block body %}
+<div class="profile-container">
     <h1>Modifier mon profil</h1>
 
     {# Affichage des messages flash (erreurs ou succès) #}
@@ -57,4 +63,5 @@
 
     <br>
     <a href="{{ path('profile_index') }}" class="btn btn-secondary">Retour à mon profil</a>
+</div>
 {% endblock %}
