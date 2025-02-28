@@ -32,14 +32,23 @@ final class SortieController extends AbstractController
     public function creation(Request $request, EntityManagerInterface $em): Response
     {
         $sortie = new Sortie();
+        $sortie->setOrganisateur($this->getUser());
+        $sortie->addParticipant($this->getUser()); // Ajoute l'utilisateur connecté comme participant
+
         $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
         $sortieForm->handleRequest($request);
 
-        if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+        if ($sortieForm->isSubmitted() && $sortieForm->isValid()
+        ) {
+            // Ajoutez à nouveau l'utilisateur connecté pour vous assurer qu'il est inclus
+            $sortie->addParticipant($this->getUser());
+
             $em->persist($sortie);
             $em->flush();
 
-            $this->addFlash('success', 'Sortie créée avec succès !');
+            $this->addFlash('success',
+                'Sortie créée avec succès !'
+            );
             return $this->redirectToRoute('app_sortie');
         }
 
@@ -61,6 +70,7 @@ final class SortieController extends AbstractController
     {
         $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
         $sortieForm->handleRequest($request);
+        
 
         // Ajouter ceci pour déboguer
         if ($request->isMethod('POST')) {
@@ -73,7 +83,6 @@ final class SortieController extends AbstractController
         }
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            // Récupérer les participants sélectionnés dans le formulaire
             $selectedParticipants = $sortieForm->get('participants')->getData();
 
             // Vider la collection actuelle de participants
