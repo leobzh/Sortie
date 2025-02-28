@@ -12,11 +12,19 @@
         </div>
         <nav class="main-nav">
             <ul class="nav-links">
+                {% if(is_granted('ROLE_ADMIN')) %}
+
+                    <li><a href="{{ path('admin_dashboard') }}">{ Dashboard ADMIN }</a></li>
+
+                {% endif %}
                 <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Accueil</a></li>
                 <li><a href="{{ path('app_sortie') }}" class="nav-item{% if app.request.get('_route') == 'app_sortie' %} active{% endif %}">Sorties</a></li>
                 {% if app.user %}
                     <li><a href="{{ path('app_sortie_creation') }}" class="nav-item{% if app.request.get('_route') == 'app_sortie_creation' %} active{% endif %}">Créer une sortie</a></li>
-                    <li><a href="{{ path('app_main') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Mon profil</a></li>
+                    <li><a href="{{ path('app_ville_index') }}" class="nav-item{% if app.request.get('_route') == 'app_ville_index' %} active{% endif %}">Ville</a></li>
+                    <li><a href="{{ path('app_lieu_index') }}" class="nav-item{% if app.request.get('_route') == 'app_lieu_index' %} active{% endif %}">Lieu</a></li>
+
+                    <li><a href="{{ path('profile_index') }}" class="nav-item{% if app.request.get('_route') == 'app_main' %} active{% endif %}">Mon profil</a></li>
                     <li><a href="{{ path('app_logout') }}" class="nav-item">Déconnexion</a></li>
                 {% else %}
                     <li><a href="{{ path('app_login') }}" class="nav-item{% if app.request.get('_route') == 'app_login' %} active{% endif %}">Connexion</a></li>

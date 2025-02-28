@@ -15,14 +15,14 @@
 
     {# Affichage des informations de l'utilisateur #}
     <div class="profile-info">
-        <p><strong>Pseudo :</strong> {{ app.user.pseudo }}</p>
-        <p><strong>Nom :</strong> {{ app.user.nom }}</p>
-        <p><strong>Prénom :</strong> {{ app.user.prenom }}</p>
-        <p><strong>Téléphone :</strong> {{ app.user.telephone ? app.user.telephone : 'Non renseigné' }}</p>
-        
-        {# Affichage de l'image de profil #}
         <div class="profile-image-container">
             <img src="{{ asset('uploads/profile_images/' ~ (app.user.profileImage ?: 'default-profile.png')) }}" alt="Image de profil" class="profile-image" />
+        </div>
+        <div>
+            <p><strong>Pseudo :</strong> {{ app.user.pseudo }}</p>
+            <p><strong>Nom :</strong> {{ app.user.nom }}</p>
+            <p><strong>Prénom :</strong> {{ app.user.prenom }}</p>
+            <p><strong>Téléphone :</strong> {{ app.user.telephone ? app.user.telephone : 'Non renseigné' }}</p>
         </div>
     </div>
 

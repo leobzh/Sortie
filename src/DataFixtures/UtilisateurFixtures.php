@@ -38,6 +38,7 @@ class UtilisateurFixtures extends Fixture
         $admin->setTelephone($faker->unique()->numerify('06 ## ## ## ##'));
         $admin->setIsAdministrateur(true);
         $admin->setIsActif(true);
+        $admin->setIsVerified(true);
 
         $manager->persist($admin);
         $this->addReference('user_admin', $admin);
