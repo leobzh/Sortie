@@ -1,31 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+<div class="register-container">
+    <div class="register-header">
+        <h1>Inscription</h1>
+    </div>
 
-    <h1>Register</h1>
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-circle"></i> {{ flash_error }}
+        </div>
+    {% endfor %}
 
     {{ form_errors(registrationForm) }}
 
     {{ form_start(registrationForm) }}
+        <div class="form-group">
+            <label for="{{ registrationForm.pseudo.vars.id }}"><i class="fas fa-user"></i> Pseudo</label>
+            {{ form_widget(registrationForm.pseudo, {'attr': {'class': 'form-control', 'placeholder': 'Votre pseudo'}}) }}
+            {{ form_errors(registrationForm.pseudo) }}
+        </div>
 
-    {{ form_row(registrationForm.pseudo) }}
-    {{ form_row(registrationForm.email) }}
-    {{ form_row(registrationForm.site) }}
+        <div class="form-group">
+            <label for="{{ registrationForm.email.vars.id }}"><i class="fas fa-envelope"></i> Email</label>
+            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'votre@email.com'}}) }}
+            {{ form_errors(registrationForm.email) }}
+        </div>
 
-    {{ form_row(registrationForm.nom) }}
-    {{ form_row(registrationForm.prenom) }}
-    {{ form_row(registrationForm.telephone) }}
+        <div class="form-group">
+            <label for="{{ registrationForm.site.vars.id }}"><i class="fas fa-globe"></i> Site</label>
+            {{ form_widget(registrationForm.site, {'attr': {'class': 'form-control', 'placeholder': 'Votre site'}}) }}
+            {{ form_errors(registrationForm.site) }}
+        </div>
 
-    {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        <div class="form-group">
+            <label for="{{ registrationForm.nom.vars.id }}"><i class="fas fa-id-card"></i> Nom</label>
+            {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control', 'placeholder': 'Votre nom'}}) }}
+            {{ form_errors(registrationForm.nom) }}
+        </div>
 
-        <button type="submit" class="btn">Register</button>
+        <div class="form-group">
+            <label for="{{ registrationForm.prenom.vars.id }}"><i class="fas fa-id-card"></i> Prénom</label>
+            {{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control', 'placeholder': 'Votre prénom'}}) }}
+            {{ form_errors(registrationForm.prenom) }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ registrationForm.telephone.vars.id }}"><i class="fas fa-phone"></i> Téléphone</label>
+            {{ form_widget(registrationForm.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Votre téléphone'}}) }}
+            {{ form_errors(registrationForm.telephone) }}
+        </div>
+
+        <div class="form-group form-full-width">
+            <label for="{{ registrationForm.plainPassword.vars.id }}"><i class="fas fa-lock"></i> Mot de passe</label>
+            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Choisissez un mot de passe sécurisé'}}) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        <div class="form-group form-full-width">
+            <div class="checkbox">
+                {{ form_widget(registrationForm.agreeTerms) }}
+                <label for="{{ registrationForm.agreeTerms.vars.id }}">J'accepte les conditions d'utilisation</label>
+            </div>
+            {{ form_errors(registrationForm.agreeTerms) }}
+        </div>
+
+        <button type="submit" class="btn">
+            <i class="fas fa-user-plus"></i> S'inscrire
+        </button>
     {{ form_end(registrationForm) }}
+</div>
 {% endblock %}
