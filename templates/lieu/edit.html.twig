@@ -2,12 +2,31 @@
 
 {% block title %}Edit Lieu{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Ajouter dans la section <head> de ton fichier HTML/Twig -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+{% endblock %}
+
 {% block body %}
     <h1>Edit Lieu</h1>
 
-    {{ include('lieu/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('lieu/_form.html.twig', {'form_title' : 'Edition du lieu', 'button_label': 'Mettre à jour ce lieu !'}) }}
 
-    <a href="{{ path('app_lieu_index') }}">back to list</a>
 
     {{ include('lieu/_delete_form.html.twig') }}
+
+    <a href="{{ path('app_lieu_index') }}"><< Retourner à la liste</a>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        //const isEdition = true;
+    </script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ asset('js/autocomplete.js') }}"></script>
+
 {% endblock %}

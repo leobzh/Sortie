@@ -97,10 +97,12 @@
             {% if sortie.participants|length > 0 %}
                 <div class="participant-avatars">
                     {% for participant in sortie.participants %}
+                        <a href="{{ path('utilisateur_detail', {'id': participant.id, sortieId: sortie.id}) }}" class="participant-avatar-link">
                         <div class="participant-avatar" title="{{ participant.prenom }} {{ participant.nom }}">
                             <div class="avatar-circle">
                                 {{ participant.prenom|first }}{{ participant.nom|first }}
                             </div>
+                        </a>
                             <span class="participant-name">{{ participant.prenom }}</span>
                         </div>
                     {% endfor %}

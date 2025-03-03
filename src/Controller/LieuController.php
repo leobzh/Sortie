@@ -65,7 +65,7 @@ final class LieuController extends AbstractController
         // Affichage du formulaire
         return $this->render('lieu/new.html.twig', [
             'lieu' => $lieu,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

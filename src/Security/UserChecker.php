@@ -18,6 +18,10 @@ class UserChecker implements UserCheckerInterface
         if (!$user->isVerified()) {
             throw new CustomUserMessageAccountStatusException('Votre compte n\'a pas encore été vérifié. Veuillez vérifier vos emails.');
         }
+        if (!$user->isActif()) {
+            throw new CustomUserMessageAccountStatusException('Votre compte a été désactivé. Veuillez contacter l\'administrateur du site.');
+        }
+
     }
 
     public function checkPostAuth(UserInterface $user): void
