@@ -49,6 +49,7 @@
 
     <div class="form-container">
         {{ form_start(sortieForm, {'attr': {'id': 'sortieForm'}}) }}
+        {{ form_row(sortieForm._token) }} <!-- Ajoutez cette ligne pour inclure le champ CSRF -->
 
         <div class="form-row">
             <div class="form-group">
@@ -96,7 +97,7 @@
                     {% if sortie.participants|length > 0 %}
                         <span class="participants-warning">
                             <i class="fas fa-exclamation-triangle"></i>
-                            Il y a déjà {{ sortie.participants|length }} participant(s) inscrits
+                            Il y a déjà {{ sortie.participants|length }} participant(s) inscrit(s)
                         </span>
                     {% endif %}
                 </div>
@@ -166,7 +167,7 @@
 
         <div class="participants-section">
             <h3><i class="fas fa-user-friends"></i> Participants actuels ({{ sortie.participants|length }})</h3>
-            
+
             <!-- Sound toggle switch -->
             <label class="sound-toggle">
                 <input type="checkbox" id="soundToggle" checked>
@@ -195,7 +196,7 @@
                                 </form>
                             {% endif %}
                         </div>
-                    {% endfor %}    
+                    {% endfor %}
                 </div>
             {% else %}
                 <p class="no-participants">Aucun participant inscrit pour le moment.</p>
@@ -228,21 +229,28 @@
 <audio id="kickSound" src="{{ asset('sounds/kick.mp3') }}" preload="auto"></audio>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {        
+    document.addEventListener('DOMContentLoaded', function() {
         // Gestion du toggle son
         const checkboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
         const soundToggle = document.getElementById('soundToggle');
         const soundIcon = document.getElementById('soundIcon');
         const soundLabel = soundToggle.nextElementSibling.nextElementSibling;
-        
+
         // Set initial state
         updateSoundIcon();
-        
+
+        // Hide checkbox for the connected user
+        checkboxes.forEach(checkbox => {
+            if (checkbox.value === '{{ app.user.id }}') {
+                checkbox.parentElement.style.display = "none";
+            }
+        });
+
         // Toggle sound on/off when checkbox is clicked
         soundToggle.addEventListener('change', function() {
             updateSoundIcon();
         });
-        
+
         function updateSoundIcon() {
             if (soundToggle.checked) {
                 soundIcon.className = 'fas fa-volume-up sound-toggle-icon';
@@ -252,40 +260,44 @@
                 soundLabel.textContent = 'Son désactivé';
             }
         }
-        
+
         // Gérer la soumission du formulaire pour s'assurer qu'il fonctionne correctement
         const saveButton = document.getElementById('saveButton');
         const sortieForm = document.getElementById('sortieForm');
-        
-        saveButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Prévenir la soumission par défaut
-            
-            // Soumettre le formulaire manuellement
-            sortieForm.submit();
-        });
+
+        if (saveButton && sortieForm) {
+            saveButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prévenir la soumission par défaut
+
+                // Soumettre le formulaire manuellement
+                sortieForm.submit();
+            });
+        } else {
+            console.error("Le formulaire ou le bouton de soumission n'a pas été trouvé.");
+        }
     });
-    
+
     // Fonction pour jouer le son et attendre qu'il soit terminé avant de rediriger
     function playSound(callback) {
         const soundToggle = document.getElementById('soundToggle');
         if (soundToggle && soundToggle.checked) {
             const audio = document.getElementById('kickSound');
             audio.currentTime = 0;
-            
+
             // Ajouter un événement qui s'exécute lorsque le son est terminé
             audio.onended = function() {
                 if (callback) callback();
             };
-            
+
             // Gérer le cas où le son ne peut pas être joué
             audio.onerror = function() {
                 console.log("Erreur de lecture audio");
                 if (callback) callback();
             };
-            
+
             // Jouer le son
             const playPromise = audio.play();
-            
+
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.log("Erreur de lecture audio:", error);
@@ -297,13 +309,6 @@
             if (callback) callback();
         }
     }
-    
-    // Hide checkbox for the connected user
-    checkboxes.forEach(checkbox => {
-        if (checkbox.value === '{{ app.user.id }}') {
-            checkbox.disabled = true;
-        }
-    });
 
     // Fonction pour gérer la suppression d'un participant avec le son
     function handleRemoveParticipant(participantId, formAction) {
@@ -316,7 +321,7 @@
             form.submit();
         });
     }
-    
+
     // Fonction pour gérer la suppression de la sortie
     function handleDeleteSortie(deleteUrl) {
         if (confirm('Êtes-vous sûr de vouloir supprimer cette sortie?')) {

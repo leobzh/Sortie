@@ -25,6 +25,7 @@
 
     <div class="form-container">
         {{ form_start(sortieForm) }}
+        {{ form_row(sortieForm._token) }} <!-- Ajoutez cette ligne pour inclure le champ CSRF -->
 
         <div class="form-row">
             <div class="form-group">
@@ -163,7 +164,7 @@
             checkboxes.forEach(checkbox => {
                 console.log(checkbox.value);
                 if (checkbox.value === '{{ app.user.id }}') {
-                    checkbox.disabled = true;
+                    checkbox.parentElement.style.display = "none";
                 }
             });
 
