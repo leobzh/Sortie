@@ -101,4 +101,12 @@ final class AdminDashboardController extends AbstractController
 
         return $this->render('admin/import_users.html.twig', []);
     }
+
+    #[Route('/', name: 'dashboard')]
+    public function isActif(): Response
+    {
+        return $this->render('admin/index.html.twig', [
+            'controller_name' => 'AdminDashboardController',
+        ]);
+    }
 }
