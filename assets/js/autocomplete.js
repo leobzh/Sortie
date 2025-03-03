@@ -1,5 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+
+    // Initialiser la carte Leaflet
+    const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris comme position par défaut
+
+    // Sélection des champs existants
+    const inputRue = document.getElementById("lieu_rue");
+    const inputLatitude = document.getElementById("lieu_latitude");
+    const inputLongitude = document.getElementById("lieu_longitude");
+    const inputVilleNom = document.getElementById("lieu_ville_nom");
+    const inputCodePostal = document.getElementById("lieu_code_postal");
     const inputAutocomplete = document.getElementById("lieu_autocomplete");
+
+    /* On doit tout d'abord vérifier si on est dans le cas d'une édition afin de compléter éventuellement
+    le champ auto-complete avec l'adresse complète
+
+     */
+     inputAutocomplete.value = inputRue.value + ' ' + inputCodePostal.value + ' ' + inputVilleNom.value;
+     L.marker([inputLatitude.value, inputLongitude.value]).addTo(map);
+     map.setView([inputLatitude.value, inputLongitude.value], 13);
+
+
     const selectAdresse = document.createElement("div");
     selectAdresse.id = "adresse-results";
     selectAdresse.style.display = "none";
@@ -10,15 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
     selectAdresse.style.width = inputAutocomplete.offsetWidth + "px";
     inputAutocomplete.parentNode.appendChild(selectAdresse);
 
-    // Sélection des champs existants
-    const inputRue = document.getElementById("lieu_rue");
-    const inputLatitude = document.getElementById("lieu_latitude");
-    const inputLongitude = document.getElementById("lieu_longitude");
-    const inputVilleNom = document.getElementById("lieu_ville_nom");
-    const inputCodePostal = document.getElementById("lieu_code_postal");
 
-    // Initialiser la carte Leaflet
-    const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris comme position par défaut
+
 
     // Ajouter une couche de tuiles (par exemple, OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

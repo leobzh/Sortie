@@ -11,8 +11,17 @@ class EtatFixtures extends Fixture implements FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
+        /*
+            created : etat initial de brouillon
+            opened : la sortie est ouverte à la participation
+            closed : les inscriptions sont fermées
+            processing : la sortie a lieu actuellement
+            terminated : la sortie a eu lieu (à la minute près)
+            cancelled : la sortie a été annulée
+        */
+
         $etats = [
-            'OUVERT', 'EN_COURS', 'TERMINE', 'ANNULE'
+            'CREATED', 'OPENED', 'CLOSED', 'PROCESSING', 'TERMINATED', 'CANCELLED', 'ARCHIVED'
         ];
 
         foreach ($etats as $i => $libelle) {

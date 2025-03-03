@@ -98,10 +98,11 @@ class SortieRepository extends ServiceEntityRepository
 
         // Filtre sur isEnded
         if ($isEnded) {
-            $qb->andWhere('s.etat = :etat')
-                ->setParameter('etat', 3);
+            $qb = $this->createQueryBuilder('s')
+                ->leftJoin('s.etat', 'e')
+                ->andWhere('e.libelle = :etat')
+                ->setParameter('etat', 'TERMINATED');
         }
-
 
         // Filtre sur les critères dynamiques (ex. site, état, etc.) avec valeur EXACTES
         foreach ($criteria as $field => $value) {
