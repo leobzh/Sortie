@@ -76,7 +76,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $prenom = null;
 
-    #[ORM\Column(length: 10, unique: true, nullable: true)]
+    #[Assert\Length(
+        min: 10,
+        max: 10,
+        minMessage: "Le numéro de téléphone doit contenir exactement 10 chiffres.",
+        maxMessage: "Le numéro de téléphone doit contenir exactement 10 chiffres."
+    )]
+    #[Assert\Regex(
+        pattern: "/^\d{10}$/",
+        message: "Le numéro de téléphone ne doit contenir que des chiffres."
+    )]
     private ?string $telephone = null;
 
     #[ORM\Column(options: ['default' => false])]

@@ -76,10 +76,19 @@ final class SortieController extends AbstractController
     public function creation(Request $request, EntityManagerInterface $em): Response
     {
         $sortie = new Sortie();
-        $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
+        $sortieForm = $this->createForm(SortieCreationType::class, $sortie, [
+            //'csrf_protection' => false
+        ]);
+
         $sortieForm->handleRequest($request);
 
+       if ($sortieForm->isSubmitted() && !$sortieForm->isValid()) {
+            dump($sortieForm->getErrors(true, false));
+        }
+
+
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+
             $em->persist($sortie);
             $em->flush();
 
