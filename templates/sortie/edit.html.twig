@@ -228,11 +228,9 @@
 <audio id="kickSound" src="{{ asset('sounds/kick.mp3') }}" preload="auto"></audio>
 
 <script>
-    // Initialisation des datepickers avec Flatpickr
-    document.addEventListener('DOMContentLoaded', function() {
-
-        
+    document.addEventListener('DOMContentLoaded', function() {        
         // Gestion du toggle son
+        const checkboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
         const soundToggle = document.getElementById('soundToggle');
         const soundIcon = document.getElementById('soundIcon');
         const soundLabel = soundToggle.nextElementSibling.nextElementSibling;
@@ -300,6 +298,13 @@
         }
     }
     
+    // Hide checkbox for the connected user
+    checkboxes.forEach(checkbox => {
+        if (checkbox.value === '{{ app.user.id }}') {
+            checkbox.disabled = true;
+        }
+    });
+
     // Fonction pour gérer la suppression d'un participant avec le son
     function handleRemoveParticipant(participantId, formAction) {
         playSound(function() {

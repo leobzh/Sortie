@@ -152,14 +152,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialisation de Flatpickr pour les sélecteurs de date
-            //flatpickr(".datepicker", {
-            //    enableTime: true,
-            //    dateFormat: "d/m/Y H:i",
-            //    locale: "fr",
-            //    time_24hr: true
-            //});
-
             // Recherche de participants
             const searchInput = document.getElementById('search-participants');
             const checkboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
@@ -169,6 +161,7 @@
 
             // Hide checkbox for the connected user
             checkboxes.forEach(checkbox => {
+                console.log(checkbox.value);
                 if (checkbox.value === '{{ app.user.id }}') {
                     checkbox.disabled = true;
                 }
