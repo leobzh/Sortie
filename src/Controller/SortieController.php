@@ -76,10 +76,10 @@ final class SortieController extends AbstractController
     public function creation(Request $request, EntityManagerInterface $em): Response
     {
         $sortie = new Sortie();
-        $sortieForm = $this->createForm(SortieCreationType::class, $sortie, [
-            //'csrf_protection' => false
-        ]);
+        $sortie->setOrganisateur($this->getUser());
+        $sortie->addParticipant($this->getUser()); // Ajoute l'utilisateur connecté comme participant
 
+        $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
         $sortieForm->handleRequest($request);
 
        if ($sortieForm->isSubmitted() && !$sortieForm->isValid()) {
@@ -87,12 +87,17 @@ final class SortieController extends AbstractController
         }
 
 
-        if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+        if ($sortieForm->isSubmitted() && $sortieForm->isValid()
+        ) {
+            // Ajoutez à nouveau l'utilisateur connecté pour vous assurer qu'il est inclus
+            $sortie->addParticipant($this->getUser());
 
             $em->persist($sortie);
             $em->flush();
 
-            $this->addFlash('success', 'Sortie créée avec succès !');
+            $this->addFlash('success',
+                'Sortie créée avec succès !'
+            );
             return $this->redirectToRoute('app_sortie');
         }
 
@@ -115,29 +120,7 @@ final class SortieController extends AbstractController
         $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
         $sortieForm->handleRequest($request);
 
-        // Ajouter ceci pour déboguer
-        if ($request->isMethod('POST')) {
-            // Le formulaire a été soumis
-            if (!$sortieForm->isSubmitted()) {
-                $this->addFlash('error', 'Le formulaire n\'a pas été correctement soumis');
-            } elseif (!$sortieForm->isValid()) {
-                $this->addFlash('error', 'Le formulaire contient des erreurs');
-            }
-        }
-
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            // Récupérer les participants sélectionnés dans le formulaire
-            $selectedParticipants = $sortieForm->get('participants')->getData();
-
-            // Vider la collection actuelle de participants
-            foreach ($sortie->getParticipants()->toArray() as $existingParticipant) {
-                $sortie->removeParticipant($existingParticipant);
-            }
-
-            // Ajouter tous les participants sélectionnés
-            foreach ($selectedParticipants as $participant) {
-                $sortie->addParticipant($participant);
-            }
 
             // Persister les changements
             $em->persist($sortie);
@@ -149,21 +132,20 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/edit.html.twig', [
             'sortie' => $sortie,
-            'sortieForm' => $sortieForm,
+            'sortieForm' => $sortieForm->createView(),
         ]);
     }
+
 
     #[Route('/{id}/archive', name: 'app_sortie_archive', methods: ['GET', 'POST'])]
     public function archive(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
     {
-        // Récupérer l'état "archivé" depuis la base de données
         $etatArchive = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Archivé']);
 
         if (!$etatArchive) {
             throw $this->createNotFoundException('État "Archivé" non trouvé.');
         }
 
-        // Mettre à jour l'état de la sortie
         $sortie->setEtat($etatArchive);
         $em->persist($sortie);
         $em->flush();
@@ -221,4 +203,5 @@ final class SortieController extends AbstractController
 
         return $this->redirectToRoute('app_sortie');
     }
+
 }

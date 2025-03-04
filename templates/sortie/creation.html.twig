@@ -25,7 +25,7 @@
 
     <div class="form-container">
         {{ form_start(sortieForm) }}
-        {{ form_row(sortieForm._token) }} {# Vérifie si ce champ est bien affiché #}
+        {{ form_row(sortieForm._token) }} <!-- Ajoutez cette ligne pour inclure le champ CSRF -->
 
         <div class="form-row">
             <div class="form-group">
@@ -143,32 +143,69 @@
                 <i class="fas fa-check"></i> Créer la sortie
             </button>
         </div>
-        
+
+        <div id="error-message" class="alert alert-danger" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> Trop de participants sélectionnés.
+        </div>
+
         {{ form_end(sortieForm) }}
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialisation de Flatpickr pour les sélecteurs de date
-            //flatpickr(".datepicker", {
-            //    enableTime: true,
-            //    dateFormat: "d/m/Y H:i",
-            //    locale: "fr",
-            //    time_24hr: true
-            //});
-
             // Recherche de participants
             const searchInput = document.getElementById('search-participants');
             const checkboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
             const labels = document.querySelectorAll('.form-check label');
+            const maxParticipants = parseInt('{{ sortieForm.nbInscriptionsMax.vars.value }}');
+            const errorMessage = document.getElementById('error-message');
+
+            // Hide checkbox for the connected user
+            checkboxes.forEach(checkbox => {
+                console.log(checkbox.value);
+                if (checkbox.value === '{{ app.user.id }}') {
+                    checkbox.parentElement.style.display = "none";
+                }
+            });
+
+            // Disable checkboxes when max participants is reached
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checkedCount = document.querySelectorAll('.form-check input[type="checkbox"]:checked').length;
+                    if (checkedCount >= maxParticipants) {
+                        checkboxes.forEach(cb => {
+                            if (!cb.checked) {
+                                cb.disabled = true;
+                            }
+                        });
+                    } else {
+                        checkboxes.forEach(cb => {
+                            if (cb.value !== '{{ app.user.id }}') {
+                                cb.disabled = false;
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Validate form before submission
+            document.querySelector('form').addEventListener('submit', function(event) {
+                const checkedCount = document.querySelectorAll('.form-check input[type="checkbox"]:checked').length;
+                if (checkedCount > maxParticipants) {
+                    event.preventDefault(); // Prevent form submission
+                    errorMessage.style.display = 'block'; // Show error message
+                } else {
+                    errorMessage.style.display = 'none'; // Hide error message
+                }
+            });
 
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
-                
+
                 labels.forEach(label => {
                     const text = label.textContent.toLowerCase();
                     const checkbox = label.querySelector('input[type="checkbox"]');
-                    
+
                     if (text.includes(searchTerm) || searchTerm === '') {
                         label.style.display = 'flex';
                     } else {
