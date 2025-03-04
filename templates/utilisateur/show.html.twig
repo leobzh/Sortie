@@ -5,83 +5,141 @@
     <link rel="stylesheet" href="{{ asset('styles/detailUtilisateur.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        
+        .info-section {
+            margin-bottom: 25px;
+        }
+        
+        .sortie-list {
+            list-style: none;
+            padding-left: 5px;
+        }
+        
+        .sortie-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sortie-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .sortie-list li i {
+            margin-right: 8px;
+            color: rgba(106, 17, 203, 0.8);
+        }
+        
+        /* Nouvelle classe pour les propriétés du formulaire */
+        .property-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* Augmenter la taille des textes de section */
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <section class="vh-100">
-            <div class="container py-5 h-100">
-                <div class="row d-flex justify-content-center align-items-center h-100">
-                    <div class="col col-lg-6 mb-4 mb-lg-0">
-                        <div class="card mb-3" style="border-radius: .5rem;">
-                            <div class="row g-0">
-                                <div class="col-md-4 gradient-custom text-center text-white"
-                                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                                    {% if utilisateur.profileImage %}
-                                        <img src="{{ asset('uploads/profile_images/' ~utilisateur.profileImage) }}"
-                                             alt="Avatar" class="img-fluid my-5" style="width: 80px;"/>
-                                    {% else %}
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                             alt="Avatar" class="img-fluid my-5" style="width: 80px;"/>
-                                    {% endif %}
-                                    <h5>{{ utilisateur.pseudo }}</h5>
-                                    {# ajout ici site_id, voir comment faire #}
-                                    <i class="far fa-edit mb-5"></i>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body p-4">
-                                        <h6>Information</h6>
-                                        <hr class="mt-0 mb-4">
-                                        <div class="row pt-1">
-                                            <div class="col-6 mb-3">
-                                                <h6>Nom</h6>
-                                                <p class="text-muted">{{ utilisateur.nom }}</p>
-                                            </div>
-                                            <div class="col-6 mb-3">
-                                                <h6>Prénom</h6>
-                                                <p class="text-muted">{{ utilisateur.prenom }}</p>
-                                            </div>
-                                        </div>
-                                        <h6>Contact</h6>
-                                        <hr class="mt-0 mb-4">
-                                        <div class="row pt-1">
-                                            <div class="col-6 mb-3">
-                                                <h6>Mail</h6>
-                                                <p class="text-muted">{{ utilisateur.email }}</p>
-                                            </div>
-                                            <div class="col-6 mb-3">
-                                                <h6>Telephone</h6>
-                                                <p class="text-muted">{{ utilisateur.telephone }}</p>
-                                            </div>
-                                            <div>
-                                                <h6>Liste de sortie</h6>
-                                                <hr class="mt-0 mb-4">
-                                                {% if sorties is empty %}
-                                                    <p>Pas de sortie</p>
-                                                {% else %}
-                                                    <ul>
-                                                        {% for sortie in sorties %}
-                                                            <li>{{ sortie.nom }}</li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        {% if sortieId %}
-                                            <div class="d-flex justify-content-start">
-                                            <a href="{{ path('app_sortie_details', {id: sortieId}) }}"
-                                               class="btn btn-primary">Retour</a>
-                                        {% else %}
-                                            <a href="{{ path('app_sortie') }}" class="btn btn-primary">Retour</a>
-                                            </div>
-                                        {% endif %}
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-8 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-white"
+                                style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            {% if utilisateur.profileImage %}
+                                <img src="{{ asset('uploads/profile_images/' ~utilisateur.profileImage) }}"
+                                        alt="Avatar" class="my-5 profile-image"/>
+                            {% else %}
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                        alt="Avatar" class="my-5 profile-image"/>
+                            {% endif %}
+                            <h5>{{ utilisateur.pseudo }}</h5>
+                            <p class="small mb-4">{{ utilisateur.site.nom ?? 'Site non défini' }}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body p-5">
+                                <h6 class="fw-bold">Information</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1 info-section">
+                                    <div class="col-6 mb-3">
+                                        <h6><i class="fas fa-user text-muted me-2"></i>Nom</h6>
+                                        <p class="text-muted">{{ utilisateur.nom }}</p>
                                     </div>
+                                    <div class="col-6 mb-3">
+                                        <h6><i class="fas fa-user text-muted me-2"></i>Prénom</h6>
+                                        <p class="text-muted">{{ utilisateur.prenom }}</p>
+                                    </div>
+                                </div>
+                                <h6 class="fw-bold section-title">Information</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1 info-section">
+                                    <div class="col-6 mb-3">
+                                        <h6 class="property-label"><i class="fas fa-user text-muted me-2"></i>Nom</h6>
+                                        <p class="text-muted">{{ utilisateur.nom }}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6 class="property-label"><i class="fas fa-user text-muted me-2"></i>Prénom</h6>
+                                        <p class="text-muted">{{ utilisateur.prenom }}</p>
+                                    </div>
+                                </div>
+                                <h6 class="fw-bold section-title">Contact</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1 info-section">
+                                    <div class="col-6 mb-3">
+                                        <h6 class="property-label"><i class="fas fa-envelope text-muted me-2"></i>Mail</h6>
+                                        <p class="text-muted">{{ utilisateur.email }}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6 class="property-label"><i class="fas fa-phone text-muted me-2"></i>Telephone</h6>
+                                        <p class="text-muted">{{ utilisateur.telephone }}</p>
+                                    </div>
+                                </div>
+                                <h6 class="fw-bold section-title">Liste de sorties</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="info-section">
+                                    {% if sorties is empty %}
+                                        <p class="text-muted">Aucune sortie à afficher</p>
+                                    {% else %}
+                                        <ul class="sortie-list">
+                                            {% for sortie in sorties %}
+                                                <li><i class="fas fa-calendar-alt"></i>{{ sortie.nom }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex justify-content-start mt-4">
+                                    {% if sortieId %}
+                                        <a href="{{ path('app_sortie_details', {id: sortieId}) }}"
+                                            class="btn btn-primary">
+                                            <i class="fas fa-arrow-left me-2"></i>Retour à la sortie
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ path('app_sortie') }}" class="btn btn-primary">
+                                            <i class="fas fa-list me-2"></i>Retour aux sorties
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
 {% endblock %}

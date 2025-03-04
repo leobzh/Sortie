@@ -1,8 +1,18 @@
 {% extends 'base.html.twig' %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        #filters {
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+        }
+        #filters.hidden {
+            max-height: 0;
+        }
+    </style>
 {% endblock %}
 
 {% block title %}Liste des Sorties{% endblock %}
@@ -26,104 +36,102 @@
             </div>
         </div>
 
-        {# YG : Filtres #}
-        <div>
+        <div class="filter-toggle-container">
+            <button id="filter-toggle-btn" class="btn btn-secondary">
+                <i class="fas fa-filter"></i> Masquer/Afficher les filtres
+            </button>
+        </div>
 
-            <fieldset class="mb-4">
-                <legend class="fs-5 fw-bold mb-3">Filtres de recherches</legend>
-                <form action="{{ path('app_sortie') }}" method="post">
-                    <div class="row g-3">
-                        <!-- Colonne gauche : Filtres actuels -->
-                        <div class="col-md-6">
-                            <div class="row g-3 align-items-end">
-                                <!-- Filtre Site -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="site" class="form-label">Site :</label>
-                                        <select name="site" id="site" class="form-select">
-                                            <option value="" {% if selectedSiteId is not defined or selectedSiteId == '' %}selected{% endif %}>Tous les sites</option>
-                                            {% for site in sites %}
-                                                <option value="{{ site.id }}" {% if selectedSiteId is defined and selectedSiteId == site.id %}selected{% endif %}>
-                                                    {{ site.nom }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Filtre Nom -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="nom" class="form-label">Le nom de la sortie contient :</label>
-                                        <input type="text" name="nom" id="nom" class="form-control w-75" placeholder="Nom ?" value="{{ nom ?? '' }}">
-                                    </div>
-                                </div>
-
-                                <!-- Filtre Dates -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Entre (date début) et (date limite) :</label>
-                                        <div class="input-group">
-                                            <input type="date" name="dateHeureDebut" id="dateHeureDebut" class="form-control" value="{{ dateHeureDebut ?? '' }}" placeholder="Date début">
-                                            <span class="input-group-text">et</span>
-                                            <input type="date" name="dateLimiteInscription" id="dateLimiteInscription" class="form-control" value="{{ dateLimiteInscription ?? '' }}" placeholder="Date limite">
-                                        </div>
-                                    </div>
+        <fieldset id="filters" class="mb-4">
+            <legend class="fs-5 fw-bold mb-3">Filtres de recherches</legend>
+            <form action="{{ path('app_sortie') }}" method="post">
+                <div class="row g-3">
+                    <!-- Colonne gauche : Filtres actuels -->
+                    <div class="col-md-6">
+                        <div class="row g-3 align-items-end">
+                            <!-- Filtre Site -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="site" class="form-label">Site :</label>
+                                    <select name="site" id="site" class="form-select">
+                                        <option value="" {% if selectedSiteId is not defined or selectedSiteId == '' %}selected{% endif %}>Tous les sites</option>
+                                        {% for site in sites %}
+                                            <option value="{{ site.id }}" {% if selectedSiteId is defined and selectedSiteId == site.id %}selected{% endif %}>
+                                                {{ site.nom }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Colonne droite : Futurs filtres (isOrganisateur, isInscrit, isNotInscrit) -->
-                        <div class="col-md-6">
-                            <div class="row g-3 align-items-end">
-                                <!-- Filtre isOrganisateur -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="isOrganisateur" class="form-label">Mes sorties (organisateur)</label>
-                                        <input type="checkbox" name="isOrganisateur" id="isOrganisateur" {{ isOrganisateur is defined and isOrganisateur ? 'checked' : '' }} />
-                                    </div>
+                            <!-- Filtre Nom -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="nom" class="form-label">Le nom de la sortie contient :</label>
+                                    <input type="text" name="nom" id="nom" class="form-control w-75" placeholder="Nom ?" value="{{ nom ?? '' }}">
                                 </div>
-
-                                <!-- Filtre isInscrit -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="isInscrit" class="form-label">Mes sorties (participant)</label>
-                                        <input type="checkbox" name="isInscrit" id="isInscrit" {{ isInscrit is defined and isInscrit ? 'checked' : '' }} />
-                                    </div>
-                                </div>
-
-                                <!-- Filtre isNotInscrit -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="isNotInscrit" class="form-label">Sorties où je ne participe pas</label>
-                                        <input type="checkbox" name="isNotInscrit" id="isNotInscrit" {{ isNotInscrit is defined and isNotInscrit ? 'checked' : '' }} />
-                                    </div>
-                                </div>
-
-                                <!-- Filtre isEnded -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="isEnded" class="form-label">Sorties terminées</label>
-                                        <input type="checkbox" name="isEnded" id="isEnded" {{ isEnded is defined and isEnded ? 'checked' : '' }} />
-                                    </div>
-                                </div>
-
-
                             </div>
-                        </div>
 
-                        <!-- Bouton Rechercher (placé en bas, centré sur mobile) -->
-                        <div class="col-12">
-                            <div class="text-end mt-3">
-                                <button type="submit" class="btn btn-primary w-25">Rechercher</button>
+                            <!-- Filtre Dates -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">Entre (date début) et (date limite) :</label>
+                                    <div class="input-group">
+                                        <input type="date" name="dateHeureDebut" id="dateHeureDebut" class="form-control" value="{{ dateHeureDebut ?? '' }}" placeholder="Date début">
+                                        <span class="input-group-text">et</span>
+                                        <input type="date" name="dateLimiteInscription" id="dateLimiteInscription" class="form-control" value="{{ dateLimiteInscription ?? '' }}" placeholder="Date limite">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </form>
-            </fieldset>
 
+                    <!-- Colonne droite : Futurs filtres (isOrganisateur, isInscrit, isNotInscrit) -->
+                    <div class="col-md-6">
+                        <div class="row g-3 align-items-end">
+                            <!-- Filtre isOrganisateur -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="isOrganisateur" class="form-label">Mes sorties (organisateur)</label>
+                                    <input type="checkbox" name="isOrganisateur" id="isOrganisateur" {{ isOrganisateur is defined and isOrganisateur ? 'checked' : '' }} />
+                                </div>
+                            </div>
 
-        </div>
+                            <!-- Filtre isInscrit -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="isInscrit" class="form-label">Mes sorties (participant)</label>
+                                    <input type="checkbox" name="isInscrit" id="isInscrit" {{ isInscrit is defined and isInscrit ? 'checked' : '' }} />
+                                </div>
+                            </div>
+
+                            <!-- Filtre isNotInscrit -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="isNotInscrit" class="form-label">Sorties où je ne participe pas</label>
+                                    <input type="checkbox" name="isNotInscrit" id="isNotInscrit" {{ isNotInscrit is defined and isNotInscrit ? 'checked' : '' }} />
+                                </div>
+                            </div>
+
+                            <!-- Filtre isEnded -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="isEnded" class="form-label">Sorties terminées</label>
+                                    <input type="checkbox" name="isEnded" id="isEnded" {{ isEnded is defined and isEnded ? 'checked' : '' }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bouton Rechercher (placé en bas, centré sur mobile) -->
+                    <div class="col-12">
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-primary w-25">Rechercher</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
 
         {# Table View #}
         <div id="table-view" class="view-container active">
@@ -241,7 +249,7 @@
         {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() and app.user not in sortie.participants %}
         ,"participateUrl": "{{ path('app_sortie_participer', {'id': sortie.id}) }}"
         {% endif %}
-    }{% if not loop.last %}{% endif %}
+    }{% if not loop.last %},{% endif %}
         {% endfor %}
         ]
     </script>
@@ -264,6 +272,8 @@
             const calendarDaysGrid = document.getElementById('calendar-days');
             const selectedDateTitle = document.getElementById('selected-date');
             const eventsContainer = document.getElementById('events-container');
+            const filterToggleBtn = document.getElementById('filter-toggle-btn');
+            const filters = document.getElementById('filters');
 
             // Noms des mois en français
             const monthNames = [
@@ -508,6 +518,20 @@
                 renderCalendar();
                 updateDayEvents(selectedDate);
             }
+
+            // Gestionnaire pour masquer/afficher les filtres
+            filterToggleBtn.addEventListener('click', function () {
+                if (filters.classList.contains('hidden')) {
+                    filters.classList.remove('hidden');
+                    filters.style.maxHeight = filters.scrollHeight + "px";
+                } else {
+                    filters.style.maxHeight = filters.scrollHeight + "px";
+                    // Force reflow to ensure the animation takes place
+                    filters.offsetHeight;
+                    filters.style.maxHeight = 0;
+                    filters.classList.add('hidden');
+                }
+            });
         });
     </script>
 {% endblock %}
