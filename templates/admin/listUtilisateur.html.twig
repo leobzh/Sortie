@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/showVille.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
+{% endblock %}
+
+{% block title %}Liste d'utilisateur !{% endblock %}
+
+{% block body %}
+    <div class="page-ville">
+        <h1>Utilisateur</h1>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Pseudo</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for utilisateur in utilisateurs %}
+                <tr>
+                    <td>{{ utilisateur.pseudo }}</td>
+                    <td>{{ utilisateur.nom }}</td>
+                    <td>{{ utilisateur.email }}</td>
+                    <td>{{ utilisateur.telephone }}</td>
+                    <td>
+                        <a href="{{ path('utilisateur_detail', {'id': utilisateur.id}) }}" class="btn-action">
+                        <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+
+            {% else %}
+                <tr>
+                    <td colspan="4">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-light"><i class="fas fa-arrow-left"></i></a>
+    </div>
+{% endblock %}
