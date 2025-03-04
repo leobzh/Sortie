@@ -42,95 +42,97 @@
             </button>
         </div>
 
-        <fieldset id="filters" class="mb-4">
-            <legend class="fs-5 fw-bold mb-3">Filtres de recherches</legend>
-            <form action="{{ path('app_sortie') }}" method="post">
-                <div class="row g-3">
-                    <!-- Colonne gauche : Filtres actuels -->
-                    <div class="col-md-6">
-                        <div class="row g-3 align-items-end">
-                            <!-- Filtre Site -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="site" class="form-label">Site :</label>
-                                    <select name="site" id="site" class="form-select">
-                                        <option value="" {% if selectedSiteId is not defined or selectedSiteId == '' %}selected{% endif %}>Tous les sites</option>
-                                        {% for site in sites %}
-                                            <option value="{{ site.id }}" {% if selectedSiteId is defined and selectedSiteId == site.id %}selected{% endif %}>
-                                                {{ site.nom }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
+        <fieldset id="filters" class="mb-4 hidden">
+            <div class="filtres">
+                <legend class="fs-5 fw-bold mb-3">Filtres de recherches</legend>
+                <form action="{{ path('app_sortie') }}" method="post">
+                    <div class="row g-3">
+                        <!-- Colonne gauche : Filtres actuels -->
+                        <div class="col-md-6">
+                            <div class="row g-3 align-items-end">
+                                <!-- Filtre Site -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="site" class="form-label">Site :</label>
+                                        <select name="site" id="site" class="form-select">
+                                            <option value="" {% if selectedSiteId is not defined or selectedSiteId == '' %}selected{% endif %}>Tous les sites</option>
+                                            {% for site in sites %}
+                                                <option value="{{ site.id }}" {% if selectedSiteId is defined and selectedSiteId == site.id %}selected{% endif %}>
+                                                    {{ site.nom }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Filtre Nom -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="nom" class="form-label">Le nom de la sortie contient :</label>
-                                    <input type="text" name="nom" id="nom" class="form-control w-75" placeholder="Nom ?" value="{{ nom ?? '' }}">
+                                <!-- Filtre Nom -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="nom" class="form-label">Le nom de la sortie contient :</label>
+                                        <input type="text" name="nom" id="nom" class="form-control w-75" placeholder="Nom ?" value="{{ nom ?? '' }}">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Filtre Dates -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="form-label">Entre (date début) et (date limite) :</label>
-                                    <div class="input-group">
-                                        <input type="date" name="dateHeureDebut" id="dateHeureDebut" class="form-control" value="{{ dateHeureDebut ?? '' }}" placeholder="Date début">
-                                        <span class="input-group-text">et</span>
-                                        <input type="date" name="dateLimiteInscription" id="dateLimiteInscription" class="form-control" value="{{ dateLimiteInscription ?? '' }}" placeholder="Date limite">
+                                <!-- Filtre Dates -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Entre (date début) et (date limite) :</label>
+                                        <div class="input-group">
+                                            <input type="date" name="dateHeureDebut" id="dateHeureDebut" class="form-control" value="{{ dateHeureDebut ?? '' }}" placeholder="Date début">
+                                            <span class="input-group-text">et</span>
+                                            <input type="date" name="dateLimiteInscription" id="dateLimiteInscription" class="form-control" value="{{ dateLimiteInscription ?? '' }}" placeholder="Date limite">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Colonne droite : Futurs filtres (isOrganisateur, isInscrit, isNotInscrit) -->
-                    <div class="col-md-6">
-                        <div class="row g-3 align-items-end">
-                            <!-- Filtre isOrganisateur -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="isOrganisateur" class="form-label">Mes sorties (organisateur)</label>
-                                    <input type="checkbox" name="isOrganisateur" id="isOrganisateur" {{ isOrganisateur is defined and isOrganisateur ? 'checked' : '' }} />
+                        <!-- Colonne droite : Futurs filtres (isOrganisateur, isInscrit, isNotInscrit) -->
+                        <div class="col-md-6">
+                            <div class="row g-3 align-items-end">
+                                <!-- Filtre isOrganisateur -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="isOrganisateur" class="form-label">Mes sorties (organisateur)</label>
+                                        <input type="checkbox" name="isOrganisateur" id="isOrganisateur" {{ isOrganisateur is defined and isOrganisateur ? 'checked' : '' }} />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Filtre isInscrit -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="isInscrit" class="form-label">Mes sorties (participant)</label>
-                                    <input type="checkbox" name="isInscrit" id="isInscrit" {{ isInscrit is defined and isInscrit ? 'checked' : '' }} />
+                                <!-- Filtre isInscrit -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="isInscrit" class="form-label">Mes sorties (participant)</label>
+                                        <input type="checkbox" name="isInscrit" id="isInscrit" {{ isInscrit is defined and isInscrit ? 'checked' : '' }} />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Filtre isNotInscrit -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="isNotInscrit" class="form-label">Sorties où je ne participe pas</label>
-                                    <input type="checkbox" name="isNotInscrit" id="isNotInscrit" {{ isNotInscrit is defined and isNotInscrit ? 'checked' : '' }} />
+                                <!-- Filtre isNotInscrit -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="isNotInscrit" class="form-label">Sorties où je ne participe pas</label>
+                                        <input type="checkbox" name="isNotInscrit" id="isNotInscrit" {{ isNotInscrit is defined and isNotInscrit ? 'checked' : '' }} />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Filtre isEnded -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="isEnded" class="form-label">Sorties terminées</label>
-                                    <input type="checkbox" name="isEnded" id="isEnded" {{ isEnded is defined and isEnded ? 'checked' : '' }} />
+                                <!-- Filtre isEnded -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="isEnded" class="form-label">Sorties terminées</label>
+                                        <input type="checkbox" name="isEnded" id="isEnded" {{ isEnded is defined and isEnded ? 'checked' : '' }} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Bouton Rechercher (placé en bas, centré sur mobile) -->
-                    <div class="col-12">
-                        <div class="text-end mt-3">
-                            <button type="submit" class="btn btn-primary w-25">Rechercher</button>
+                        <!-- Bouton Rechercher (placé en bas, centré sur mobile) -->
+                        <div class="col-12">
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-primary w-25">Rechercher</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </fieldset>
 
         {# Table View #}
