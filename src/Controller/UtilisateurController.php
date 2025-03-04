@@ -27,9 +27,6 @@ final class UtilisateurController extends AbstractController
             throw $this->createNotFoundException('Utilisateur non trouvé !');
         }
 
-
-
-
         return $this->render('utilisateur/show.html.twig', [
             'utilisateur' => $utilisateur,
             'sortieId' => $sortieId,

@@ -7,6 +7,7 @@ use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -102,11 +103,28 @@ final class AdminDashboardController extends AbstractController
         return $this->render('admin/import_users.html.twig', []);
     }
 
-    #[Route('/', name: 'dashboard')]
-    public function isActif(): Response
+    #[Route('/list_utilisateur', name: 'list_utilisateur')]
+    public function list(EntityManagerInterface $em): Response
     {
-        return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminDashboardController',
+        return $this->render('admin/listUtilisateur.html.twig', [
+            'title' => 'Liste des utilisateurs',
+            'utilisateurs' => $em->getRepository(Utilisateur::class)->findAll(),
+        ]);
+    }
+
+    #[Route('/utilisateur/toggle/{id}', name: 'detail_utilisateur', methods: ['POST'])]
+    public function toggleActif(EntityManagerInterface $em, Utilisateur $utilisateur): JsonResponse|Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $utilisateur->setIsActif(!$utilisateur->isActif());
+
+        $em->persist($utilisateur);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'isActif' => $utilisateur->isActif(),
         ]);
     }
 }
