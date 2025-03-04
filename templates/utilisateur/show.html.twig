@@ -75,6 +75,31 @@
                                             <a href="{{ path('app_sortie') }}" class="btn btn-primary">Retour</a>
                                             </div>
                                         {% endif %}
+                                         {% if is_granted('ROLE_ADMIN') %}
+                                        <script src="{{ asset('js/toggleActif.js') }}"></script>
+
+                                        <hr class="mt-4">
+                                            <div class="d-flex justify-content-between">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input toggle-user"
+                                                   type="checkbox"
+                                                   data-id="{{ utilisateur.id }}"
+                                                   {% if utilisateur.isActif %}checked{% endif %}>
+                                            <label class="form-check-label">
+                                                {% if utilisateur.isActif %} Activé {% else %} Désactivé {% endif %}
+                                            </label>
+                                        </div>
+                                        {% endif %}
+
+
+                                       {#  <a href="{{ path('admin_delete_user', {id: utilisateur.id}) }}"
+                                           class="btn btn-danger"
+                                           onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?')">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    </div>}#}
+
+
                                     </div>
                                 </div>
                             </div>
