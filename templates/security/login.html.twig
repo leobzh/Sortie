@@ -10,7 +10,7 @@
 {% block body %}
 <div class="login-container">
     <div class="login-header">
-        <h1>Please sign in</h1>
+        <h1>Connectez-vous !</h1>
     </div>
     
     {% if error %}
@@ -26,12 +26,12 @@
 
     <form method="post">
         <div class="form-group">
-            <label for="inputEmail">Email</label>
+            <label for="inputEmail">Email Campus-ENI</label>
             <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
         </div>
         
         <div class="form-group">
-            <label for="inputPassword">Password</label>
+            <label for="inputPassword">Mot de pase</label>
             <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
         </div>
 
@@ -39,13 +39,17 @@
 
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="_remember_me"> Remember me
+                <input type="checkbox" name="_remember_me"> Se rappeler de moi
             </label>
         </div>
 
         <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
+            Se connecter
         </button>
     </form>
+    <!-- Ajout du lien vers la page de récupération de mot de passe -->
+    <p>
+        <a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
+    </p>
 </div>
 {% endblock %}

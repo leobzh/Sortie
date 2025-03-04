@@ -104,7 +104,7 @@ class SortieRepository extends ServiceEntityRepository
                 ->setParameter('etat', 'TERMINATED');
         }
 
-        // Filtre sur les critères dynamiques (ex. site, état, etc.) avec valeur EXACTES
+        // Filtre sur les critères dynamiques (site, organisateur) avec valeur EXACTES
         foreach ($criteria as $field => $value) {
             if (!empty($value)) { // Évite les filtres avec valeurs vides
                 $qb->andWhere("s.$field = :$field")
