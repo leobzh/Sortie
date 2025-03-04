@@ -12,6 +12,50 @@
         #filters.hidden {
             max-height: 0;
         }
+
+        /* Styles pour les sorties annulées */
+        .cancelled {
+            position: relative;
+            background-color: rgba(255, 0, 0, 0.1); /* Fond rouge léger */
+            color: inherit; /* Conserver la couleur du texte */
+        }
+
+        .cancelled::before {
+            content: "CANCELLED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: red;
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            z-index: 1;
+            white-space: nowrap; /* Empêcher le texte de se couper */
+        }
+
+        /* Styles pour les sorties archivées */
+        .archived {
+            position: relative;
+            background-color: rgba(128, 128, 128, 0.1); /* Fond gris léger */
+            color: inherit; /* Conserver la couleur du texte */
+        }
+
+        .archived::before {
+            content: "ARCHIVED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: darkgray;
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            z-index: 1;
+            white-space: nowrap; /* Empêcher le texte de se couper */
+        }
     </style>
 {% endblock %}
 
@@ -152,7 +196,7 @@
                     </thead>
                     <tbody>
                     {% for sortie in sorties %}
-                        <tr>
+                        <tr class="{% if sortie.etatLibelle == 'CANCELLED' %}cancelled{% elseif sortie.etatLibelle == 'ARCHIVED' %}archived{% endif %}">
                             <td data-label="Nom">{{ sortie.nom }}</td>
                             <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
                             <td data-label="Durée">{{ sortie.duree }} min</td>
@@ -171,6 +215,11 @@
                                     <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    <form action="{{ path('app_sortie_annulation', {'id': sortie.id}) }}" method="POST">
+                                        <button type="submit" class="btn-action" onclick="return confirm('Voulez-vous vraiment annuler cette sortie ?')">
+                                            <i class="fas fa-times-circle"></i>
+                                        </button>
+                                    </form>
                                 {% endif %}
                                 {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() and app.user not in sortie.participants %}
                                     <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-action">
