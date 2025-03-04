@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Détails du participant{% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/detailUtilisateur.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
@@ -14,41 +15,45 @@
             border: 3px solid white;
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
-        
+
         .info-section {
             margin-bottom: 25px;
         }
-        
+
         .sortie-list {
             list-style: none;
             padding-left: 5px;
         }
-        
+
         .sortie-list li {
             padding: 8px 0;
             border-bottom: 1px solid #eee;
         }
-        
+
         .sortie-list li:last-child {
             border-bottom: none;
         }
-        
+
         .sortie-list li i {
             margin-right: 8px;
             color: rgba(106, 17, 203, 0.8);
         }
-        
-        /* Nouvelle classe pour les propriétés du formulaire */
+
         .property-label {
             font-size: 1.1rem;
             font-weight: 600;
             color: #333;
         }
-        
-        /* Augmenter la taille des textes de section */
+
         .section-title {
             font-size: 1.3rem;
             font-weight: 700;
+        }
+
+        .admin-actions {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
         }
     </style>
 {% endblock %}
@@ -85,18 +90,6 @@
                                         <p class="text-muted">{{ utilisateur.prenom }}</p>
                                     </div>
                                 </div>
-                                <h6 class="fw-bold section-title">Information</h6>
-                                <hr class="mt-0 mb-4">
-                                <div class="row pt-1 info-section">
-                                    <div class="col-6 mb-3">
-                                        <h6 class="property-label"><i class="fas fa-user text-muted me-2"></i>Nom</h6>
-                                        <p class="text-muted">{{ utilisateur.nom }}</p>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <h6 class="property-label"><i class="fas fa-user text-muted me-2"></i>Prénom</h6>
-                                        <p class="text-muted">{{ utilisateur.prenom }}</p>
-                                    </div>
-                                </div>
                                 <h6 class="fw-bold section-title">Contact</h6>
                                 <hr class="mt-0 mb-4">
                                 <div class="row pt-1 info-section">
@@ -121,7 +114,25 @@
                                             {% endfor %}
                                         </ul>
                                     {% endif %}
-                                </div>                                
+                                </div>
+
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <div class="admin-actions">
+                                        <h6 class="fw-bold section-title">Actions Admin</h6>
+                                        <hr class="mt-0 mb-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input toggle-user"
+                                                   type="checkbox"
+                                                   data-id="{{ utilisateur.id }}"
+                                                   {% if utilisateur.isActif %}checked{% endif %}>
+                                            <label class="form-check-label">
+                                                {% if utilisateur.isActif %} Activé {% else %} Désactivé {% endif %}
+                                            </label>
+                                        </div>
+                                        <script src="{{ asset('js/toggleActif.js') }}"></script>
+                                    </div>
+                                {% endif %}
+
                                 <div class="d-flex justify-content-start mt-4">
                                     {% if sortieId %}
                                         <a href="{{ path('app_sortie_details', {id: sortieId}) }}"
@@ -141,6 +152,13 @@
                                         </a>
                                     </div>}#}
                                 </div>
+                                
+                                {#  <a href="{{ path('admin_delete_user', {id: utilisateur.id}) }}"
+                                        class="btn btn-danger"
+                                        onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?')">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </a>
+                                </div>}#}
                             </div>
                         </div>
                     </div>
