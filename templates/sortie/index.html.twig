@@ -1,231 +1,8 @@
 {% extends 'base.html.twig' %}
-
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <style>
-        .view-toggle {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .toggle-btn {
-            background: var(--light-grey);
-            border: none;
-            padding: 0.5rem 1rem;
-            margin: 0 0.5rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .toggle-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .toggle-btn:hover:not(.active) {
-            background: #e0e0e0;
-        }
-
-        .view-container {
-            display: none;
-        }
-
-        .view-container.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Styles pour le calendrier personnalisé */
-        .simple-calendar {
-            background: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-
-        .calendar-nav button {
-            background: var(--light-grey);
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .calendar-nav button:hover {
-            background: #e0e0e0;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-
-        .calendar-day-name {
-            text-align: center;
-            font-weight: bold;
-            padding: 10px;
-            background: var(--light-grey);
-            border-radius: 5px;
-        }
-
-        .calendar-day {
-            position: relative;
-            min-height: 80px;
-            height: 100px; /* Fixed height for consistent sizing */
-            padding: 5px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            background: #f9f9f9;
-            overflow: hidden; /* Prevent content from breaking layout */
-        }
-
-        .calendar-day.other-month {
-            opacity: 0.5;
-        }
-
-        .calendar-day.today {
-            background: #e6f7ff;
-            border-color: #91d5ff;
-        }
-
-        .day-number {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 24px;
-            height: 24px;
-            text-align: center;
-            line-height: 24px;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        .today .day-number {
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-        }
-
-        .calendar-events {
-            margin-top: 25px;
-            font-size: 0.8rem;
-            max-height: 60px; /* Limit height to prevent overflow */
-            overflow: hidden;
-        }
-
-        .calendar-event {
-            margin-bottom: 3px;
-            padding: 3px 5px;
-            border-radius: 3px;
-            background: var(--primary);
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%; /* Ensure text truncation works */
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .calendar-event:hover {
-            filter: brightness(1.1);
-        }
-
-        .calendar-view-all {
-            font-size: 0.7rem;
-            color: var(--primary);
-            cursor: pointer;
-            text-align: center;
-            margin-top: 2px;
-        }
-
-        /* Style pour la liste des événements du jour */
-        .events-list {
-            margin-top: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-        }
-
-        .events-list h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .event-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            transition: var(--transition);
-        }
-
-        .event-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .event-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .event-info {
-            font-size: 0.9rem;
-            color: #666;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .event-info div {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .event-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .empty-events {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-        }
-    </style>
 {% endblock %}
 
 {% block title %}Liste des Sorties{% endblock %}
@@ -385,7 +162,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 {% endif %}
-                                {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
+                                {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() and app.user not in sortie.participants %}
                                     <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-action">
                                         <i class="fas fa-user-plus"></i>
                                     </a>
@@ -461,7 +238,7 @@
         {% if app.user == sortie.organisateur %}
         ,"editUrl": "{{ path('app_sortie_edit', {'id': sortie.id}) }}"
         {% endif %}
-            {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() %}
+        {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() and app.user not in sortie.participants %}
         ,"participateUrl": "{{ path('app_sortie_participer', {'id': sortie.id}) }}"
         {% endif %}
     }{% if not loop.last %}{% endif %}
