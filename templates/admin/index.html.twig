@@ -1,10 +1,16 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
 {% block title %}Hello AdminDashboardController!{% endblock %}
 
 {% block body %}
 
 
     {% include 'admin/partials/_header.html.twig' %}
+
+    <a href="{{ path('admin_list_utilisateur') }}">liste d'utilisateur</a>
 
 {% endblock %}
