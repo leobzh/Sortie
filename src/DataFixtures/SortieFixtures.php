@@ -20,6 +20,21 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
 
         $nbSorties = 8;
 
+        // Exemple de tableau de noms
+        $names = [
+            'Sortie au parc',
+            'Soirée cinéma',
+            'Randonnée en montagne',
+            'Concert de rock',
+            'Exposition d’art',
+            'Boire un coup au CAP\'S',
+            'Sortie patinoire',
+            'Tonus Pharma',
+            'Saoûlerie au ShakaBar',
+            'After chez Antoine'
+        ];
+
+
         for ($i = 0; $i < $nbSorties; $i++) {
             $site = $this->getReference('site_' . rand(0, 1), Site::class);
             $lieu = $this->getReference('lieu_' . rand(0, 9), Lieu::class);
@@ -30,7 +45,10 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
             $dateLimite = (clone $dateDebut)->modify('-3 days');
 
             $sortie = new Sortie();
-            $sortie->setNom($faker->sentence(3));
+            //$sortie->setNom($faker->sentence(3));
+
+            $sortie->setNom($names[$i]);
+
             $sortie->setDateHeureDebut($dateDebut);
             $sortie->setDuree($faker->numberBetween(60, 300));
             $sortie->setDateLimiteInscription($dateLimite);

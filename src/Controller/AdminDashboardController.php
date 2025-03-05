@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Site;
 use App\Entity\Utilisateur;
+use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -144,5 +145,35 @@ final class AdminDashboardController extends AbstractController
         $this->addFlash('success', 'BAN effectuer avec succes');
 
         return $this->redirectToRoute('admin_list_utilisateur');
+    }
+
+    #[Route('/create_utilisateur', name: 'create_utilisateur')]
+    public function adminCreate(Request $request, UserPasswordHasherInterface $utilisateurPasswordHasher, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $utilisateur = new Utilisateur();
+        $form = $this->createForm(RegistrationFormType::class, $utilisateur);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var string $plainPassword */
+            $plainPassword = $form->get('plainPassword')->getData();
+
+            $utilisateur->setPassword($utilisateurPasswordHasher->hashPassword($utilisateur, $plainPassword));
+
+            $utilisateur->setIsVerified(true);
+
+            $em->persist($utilisateur);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_list_utilisateur');
+        }
+
+        return $this->render('registration/register.html.twig', [
+            'title' => 'Creation Utilisateur par Admin',
+            'registrationForm' => $form,
+
+        ]);
     }
 }
