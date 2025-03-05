@@ -37,9 +37,6 @@ class Sortie
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $infosSortie = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $urlPhoto = null;
-
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Lieu $lieu = null;
@@ -140,18 +137,6 @@ class Sortie
     public function setInfosSortie(?string $infosSortie): static
     {
         $this->infosSortie = $infosSortie;
-
-        return $this;
-    }
-
-    public function getUrlPhoto(): ?string
-    {
-        return $this->urlPhoto;
-    }
-
-    public function setUrlPhoto(?string $urlPhoto): static
-    {
-        $this->urlPhoto = $urlPhoto;
 
         return $this;
     }

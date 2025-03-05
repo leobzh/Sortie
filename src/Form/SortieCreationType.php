@@ -50,10 +50,6 @@ class SortieCreationType extends AbstractType
                 'label' => 'Informations',
                 'required' => false,
             ])
-            ->add('urlPhoto', TextType::class, [
-                'label' => 'URL de la photo',
-                'required' => false,
-            ])
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
                 'choice_label' => 'nom',

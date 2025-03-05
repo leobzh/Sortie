@@ -140,14 +140,6 @@
                 {{ form_widget(sortieForm.organisateur, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(sortieForm.organisateur) }}
             </div>
-
-            <div class="form-group">
-                <label for="{{ sortieForm.urlPhoto.vars.id }}">
-                    <i class="fas fa-image"></i> {{ form_label(sortieForm.urlPhoto) }}
-                </label>
-                {{ form_widget(sortieForm.urlPhoto, {'attr': {'class': 'form-control', 'placeholder': 'URL de la photo'}}) }}
-                {{ form_errors(sortieForm.urlPhoto) }}
-            </div>
         </div>
 
         <div class="form-group">
