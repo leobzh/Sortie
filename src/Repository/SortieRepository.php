@@ -30,6 +30,71 @@ class SortieRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /*
+     * Liste les sorties qui viennent de démarrer
+     * PROCESSING -> quand la sortie a debutée ET n'est pas finie
+     */
+    public function findSortiesEnCours()
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.dateHeureDebut <= :now') // La date de début est passée ou c'est maintenant
+            ->andWhere('s.dateHeureDebut + s.duree > :now') // La date de fin n'est pas encore passée
+            ->leftJoin('s.etat', 'e')
+            ->andWhere('e.libelle = :etat')
+            ->setParameter('etat', 'OPENED')
+            ->setParameter('now', new \DateTime('now'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /*
+         * Liste les sorties à archiver
+         * ARCHIVED -> quand la sortie est terminée depuis plus de 1 mois
+         */
+    public function findSortiesArchivees()
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('DATE_ADD(s.dateHeureDebut, s.duree, \'minute\') < :oneMonthAgo') // L'événement est terminé depuis +1 mois
+            ->leftJoin('s.etat', 'e')
+            ->andWhere('e.libelle != :archived') // On exclut ceux déjà archivés
+            ->setParameter('archived', 'ARCHIVED')
+            ->setParameter('oneMonthAgo', (new \DateTime())->modify('-1 month'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /*
+         * Liste les sorties à fermer (inscriptions closes)
+         * CLOSED -> quand la date d'inscription de la sortie est passée
+         */
+    public function findSortiesFermees()
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.dateLimiteInscription < :now ') // La date d'inscription est derrière nous
+            ->leftJoin('s.etat', 'e')
+            ->andWhere('e.libelle != :closed') // On exclut ceux déjà closed
+            ->setParameter('now', new \DateTime('now'))
+            ->setParameter('closed', 'CLOSED')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /*
+         * Liste les sorties dont la date de
+         * TERMINATED-> quand la sortie est finie
+         */
+    public function findSortiesTerminees()
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.dateHeureDebut + s.duree < :now ') // La date de la sortie + sa duree est inferieure à aujourd'hui
+            ->leftJoin('s.etat', 'e')
+            ->andWhere('e.libelle != :terminated') // On exclut ceux déjà terminated
+            ->setParameter('now', new \DateTime('now'))
+            ->setParameter('terminated', 'TERMINATED')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByNameContaining(string $nom): array
     {
         return $this->createQueryBuilder('s')

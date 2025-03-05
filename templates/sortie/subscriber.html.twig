@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+{% for sortie in sorties %}
+    <p>{{ sortie.nom }}</p>
+{% endfor %}
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

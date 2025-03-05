@@ -112,7 +112,9 @@
                                     {% else %}
                                         <ul class="sortie-list">
                                             {% for sortie in sorties %}
-                                                <li><i class="fas fa-calendar-alt"></i>{{ sortie.nom }}</li>
+                                                <li><i class="fas fa-calendar-alt"></i>
+                                                    <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}">{{ sortie.nom }}</a>
+                                                </li>
                                             {% endfor %}
                                         </ul>
                                     {% endif %}
