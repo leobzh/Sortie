@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
 
-    // Initialiser la carte Leaflet
-    const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris comme position par défaut
+
 
     // Sélection des champs existants
     const inputRue = document.getElementById("lieu_rue");
@@ -12,13 +11,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputCodePostal = document.getElementById("lieu_code_postal");
     const inputAutocomplete = document.getElementById("lieu_autocomplete");
 
+    // Initialiser la carte Leaflet
+    const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris comme position par défaut
+
     /* On doit tout d'abord vérifier si on est dans le cas d'une édition afin de compléter éventuellement
     le champ auto-complete avec l'adresse complète
 
      */
-     inputAutocomplete.value = inputRue.value + ' ' + inputCodePostal.value + ' ' + inputVilleNom.value;
-     L.marker([inputLatitude.value, inputLongitude.value]).addTo(map);
-     map.setView([inputLatitude.value, inputLongitude.value], 13);
+     if(inputLatitude.value.length > 0) {
+         inputAutocomplete.value = inputRue.value + ' ' + inputCodePostal.value + ' ' + inputVilleNom.value;
+         L.marker([inputLatitude.value, inputLongitude.value]).addTo(map);
+         map.setView([inputLatitude.value, inputLongitude.value], 13);
+    }
 
 
     const selectAdresse = document.createElement("div");
@@ -30,8 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     selectAdresse.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)";
     selectAdresse.style.width = inputAutocomplete.offsetWidth + "px";
     inputAutocomplete.parentNode.appendChild(selectAdresse);
-
-
 
 
     // Ajouter une couche de tuiles (par exemple, OpenStreetMap)

@@ -9,16 +9,16 @@
 
 {% block body %}
     {% include 'admin/partials/_header.html.twig' %}
-    
+
     <div class="container">
         <h1 class="page-title">Importer des utilisateurs en masse par importation de fichier</h1>
-        
+
         <div class="flash-messages">
             {% for message in app.flashes('success') %}
                 <div class="flash-success">{{ message }}</div>
             {% endfor %}
         </div>
-        
+
         <div class="import-section">
             <h2 class="import-title">Importer le fichier .csv</h2>
             <form class="import-form" method="post" enctype="multipart/form-data">
@@ -28,7 +28,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Importer</button>
             </form>
-            
+
             <div class="format-info">
                 <h3 class="format-title">Format du CSV attendu :</h3>
                 <div class="format-example">

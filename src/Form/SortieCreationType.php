@@ -65,8 +65,8 @@ class SortieCreationType extends AbstractType
                 'choices' => $this->etatRepository->findBy(['libelle' => ['CREATED', 'OPENED']]), // Filtrer les choix
                 'choice_label' => function ($etat) {
                     return match ($etat->getLibelle()) {
-                        'CREATED' => "J'enregistre en mode brouillon, je publierai plus tard",
-                        'OPENED' => "J'enregistre ET je publie tout de suite !",
+                        'CREATED' => "Brouillon (ma sortie n'est pas publiée, elle n'est pas visible)",
+                        'OPENED' => "Publiée (ma sortie est immédiatement visible)",
                         default => $etat->getLibelle(), // Au cas où d'autres états apparaissent
                     };
                 },
