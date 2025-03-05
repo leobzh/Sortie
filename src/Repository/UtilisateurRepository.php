@@ -33,6 +33,15 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
         $this->getEntityManager()->flush();
     }
 
+    public function findAllActive(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.deleteAt IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
+
     //    /**
     //     * @return Utilisateur[] Returns an array of Utilisateur objects
     //     */

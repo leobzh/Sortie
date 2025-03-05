@@ -231,7 +231,7 @@
                 </form>
 
                 {% if sortie.organisateur == app.user %}
-                    <button type="button" id="deleteButton" class="btn-danger" onclick="handleDeleteSortie('{{ path('app_sortie_remove', {'id': sortie.id}) }}')">
+                    <button type="button" id="deleteButton" class="btn-danger" onclick="handleDeleteSortie('{{ path('app_sortie_archive', {'id': sortie.id}) }}')">
                         <i class="fas fa-trash-alt"></i> Supprimer la sortie
                     </button>
                 {% endif %}

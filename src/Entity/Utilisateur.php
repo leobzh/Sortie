@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 
@@ -50,6 +51,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[PasswordStrength(['minScore' => 1])]
     private ?string $password = null;
 
     #[ORM\Column(length: 30, unique: true)]
@@ -76,6 +79,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $prenom = null;
 
+    #[ORM\Column(length: 10, unique: true, nullable: true)]
     #[Assert\Length(
         min: 10,
         max: 10,
@@ -117,6 +121,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profileImage = null;
+
+    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
+    private ?\DateTimeImmutable $deleteAt = null;
 
     public function __construct()
     {
@@ -362,6 +369,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setProfileImage(?string $profileImage): self
     {
         $this->profileImage = $profileImage;
+
+        return $this;
+    }
+
+    public function getDeleteAt(): ?\DateTimeImmutable
+    {
+        return $this->deleteAt;
+    }
+
+    public function setDeleteAt(?\DateTimeImmutable $deleteAt): static
+    {
+        $this->deleteAt = $deleteAt;
 
         return $this;
     }
