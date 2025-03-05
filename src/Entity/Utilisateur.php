@@ -122,6 +122,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profileImage = null;
 
+    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
+    private ?\DateTimeImmutable $deleteAt = null;
+
     public function __construct()
     {
         $this->sortiesOrganisees = new ArrayCollection();
@@ -366,6 +369,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setProfileImage(?string $profileImage): self
     {
         $this->profileImage = $profileImage;
+
+        return $this;
+    }
+
+    public function getDeleteAt(): ?\DateTimeImmutable
+    {
+        return $this->deleteAt;
+    }
+
+    public function setDeleteAt(?\DateTimeImmutable $deleteAt): static
+    {
+        $this->deleteAt = $deleteAt;
 
         return $this;
     }
