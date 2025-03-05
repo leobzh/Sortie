@@ -5,6 +5,20 @@
     <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        .btn-annule, .btn-participer {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-participer {
+            background-color: green;
+        }
+
         #filters {
             transition: max-height 0.3s ease;
             overflow: hidden;
@@ -13,15 +27,13 @@
             max-height: 0;
         }
 
-        /* Styles pour les sorties annulées */
-        .cancelled {
+        .cancelled, .archived {
             position: relative;
-            background-color: rgba(255, 0, 0, 0.1); /* Fond rouge léger */
-            color: inherit; /* Conserver la couleur du texte */
+            color: inherit;
         }
 
-        .cancelled::before {
-            content: "CANCELLED";
+        .cancelled::before, .archived::before {
+            content: attr(data-status);
             position: absolute;
             top: 50%;
             left: 50%;
@@ -32,29 +44,19 @@
             padding: 5px 10px;
             border-radius: 3px;
             z-index: 1;
-            white-space: nowrap; /* Empêcher le texte de se couper */
-        }
-
-        /* Styles pour les sorties archivées */
-        .archived {
-            position: relative;
-            background-color: rgba(128, 128, 128, 0.1); /* Fond gris léger */
-            color: inherit; /* Conserver la couleur du texte */
+            white-space: nowrap;
+            opacity: 0.8;
+            pointer-events: none;
+            width: auto;
         }
 
         .archived::before {
-            content: "ARCHIVED";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background-color: darkgray;
-            color: white;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 3px;
-            z-index: 1;
-            white-space: nowrap; /* Empêcher le texte de se couper */
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
         }
     </style>
 {% endblock %}
@@ -195,40 +197,46 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for sortie in sorties %}
-                        <tr class="{% if sortie.etatLibelle == 'CANCELLED' %}cancelled{% elseif sortie.etatLibelle == 'ARCHIVED' %}archived{% endif %}">
-                            <td data-label="Nom">{{ sortie.nom }}</td>
-                            <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
-                            <td data-label="Durée">{{ sortie.duree }} min</td>
-                            <td data-label="Lieu">{{ sortie.lieu.nom }}</td>
-                            <td data-label="Organisateur">{{ sortie.organisateur.nom }}</td>
-                            <td data-label="Participants">
-                                <span class="badge {% if sortie.participants|length >= sortie.nbInscriptionsMax %}badge-full{% endif %}">
-                                    {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
-                                </span>
-                            </td>
-                            <td data-label="Actions">
-                                <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                {% if app.user == sortie.organisateur %}
-                                    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ path('app_sortie_annulation', {'id': sortie.id}) }}" method="POST">
-                                        <button type="submit" class="btn-action" onclick="return confirm('Voulez-vous vraiment annuler cette sortie ?')">
-                                            <i class="fas fa-times-circle"></i>
-                                        </button>
-                                    </form>
-                                {% endif %}
-                                {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() and app.user not in sortie.participants %}
-                                    <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-action">
-                                        <i class="fas fa-user-plus"></i>
-                                    </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                        {% for sortie in sorties %}
+                            <tr>
+                                <td data-label="Nom">{{ sortie.nom }}</td>
+                                <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                                <td data-label="Durée">{{ sortie.duree }} min</td>
+                                <td data-label="Lieu">{{ sortie.lieu.nom }}</td>
+                                <td data-label="Organisateur">{{ sortie.organisateur.nom }}</td>
+                                <td data-label="Participants">
+                                    <span class="badge {% if sortie.participants|length >= sortie.nbInscriptionsMax %}badge-full{% endif %}">
+                                        {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
+                                    </span>
+                                </td>
+                                <td data-label="Actions" class="{% if sortie.etatLibelle == 'CANCELLED' %}cancelled{% elseif sortie.etatLibelle == 'ARCHIVED' %}archived{% endif %}" data-status="{{ sortie.etatLibelle }}">
+                                    {% if sortie.etatLibelle == 'CANCELLED' or sortie.etatLibelle == 'ARCHIVED' %}
+                                        <!-- Le texte "CANCELLED" ou "ARCHIVED" sera affiché ici -->
+                                    {% else %}
+                                        <div class="action-buttons">
+                                            <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if app.user == sortie.organisateur %}
+                                                <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ path('app_sortie_annulation', {'id': sortie.id}) }}" method="POST" class="action-form">
+                                                    <button type="submit" class="btn-annule" onclick="return confirm('Voulez-vous vraiment annuler cette sortie ?')">
+                                                        <i class="fas fa-times-circle"></i> 
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            {% if sortie.participants|length < sortie.nbInscriptionsMax and sortie.dateLimiteInscription > date() and app.user not in sortie.participants %}
+                                                <a href="{{ path('app_sortie_participer', {'id': sortie.id}) }}" class="btn-participer">
+                                                    <i class="fas fa-user-plus"></i> 
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             {% else %}
@@ -515,7 +523,7 @@
                             ` : ''}
                             ${event.participateUrl ? `
                                 <a href="${event.participateUrl}" class="btn-action">
-                                    <i class="fas fa-user-plus"></i> Participer
+                                    <i class="fas fa-user-plus"></i>
                                 </a>
                             ` : ''}
                         </div>
