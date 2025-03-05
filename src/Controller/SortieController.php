@@ -10,18 +10,20 @@ use App\Form\SortieCreationType;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use App\Repository\UtilisateurRepository;
+use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/sortie')]
 final class SortieController extends AbstractController
 {
     #[Route('/', name: 'app_sortie', methods: ['GET', 'POST'])]
-    public function recherche(Request $request, SortieRepository $sortiesRepository, SiteRepository $siteRepository): Response
+    public function recherche(Request $request, SortieRepository $sortiesRepository, SiteRepository $siteRepository, EmailService $emailService): Response
     {
         $sites = $siteRepository->findAll();
         $selectedSiteId = $request->request->get('site'); // ID du site via POST (ou '' pour "Tous les sites")
@@ -73,7 +75,7 @@ final class SortieController extends AbstractController
 
     // Creation d'une sortie
     #[Route('/Creation', name: 'app_sortie_creation')]
-    public function creation(Request $request, EntityManagerInterface $em): Response
+    public function creation(Request $request, EntityManagerInterface $em, EmailService $emailService, UrlGeneratorInterface $urlGenerator): Response
     {
         $sortie = new Sortie();
         $sortie->setOrganisateur($this->getUser());
@@ -82,9 +84,9 @@ final class SortieController extends AbstractController
         $sortieForm = $this->createForm(SortieCreationType::class, $sortie);
         $sortieForm->handleRequest($request);
 
-       if ($sortieForm->isSubmitted() && !$sortieForm->isValid()) {
+       /*if ($sortieForm->isSubmitted() && !$sortieForm->isValid()) {
             dump($sortieForm->getErrors(true, false));
-        }
+        }*/
 
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()
@@ -98,6 +100,21 @@ final class SortieController extends AbstractController
             $this->addFlash('success',
                 'Sortie créée avec succès !'
             );
+
+            // Générer l'URL de la sortie créée
+            $sortieUrl = $urlGenerator->generate('app_sortie_details', ['id' => $sortie->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $emailService->sendEmail(
+                $this->getUser()->getEmail(),
+                'Confirmation de création de votre sortie',
+                'emails/template.html.twig',  // Chemin vers votre template Twig
+                [
+                    'user' => $this->getUser(),
+                    'email_corps' => '<p>Votre sortie a bien été créée ! </p><br /><p>Voici le lien pour y accéder : </p><p>' .
+                        '<a href="' . $sortieUrl . '">' . $sortieUrl . '</a></p>'
+                    ]
+            );
+
             return $this->redirectToRoute('app_sortie');
         }
 
@@ -156,7 +173,7 @@ final class SortieController extends AbstractController
 
 
     #[Route('/{id}/participer', name: 'app_sortie_participer', methods: ['GET', 'POST'])]
-    public function participer(Sortie $sortie, EntityManagerInterface $em): Response
+    public function participer(Sortie $sortie, EntityManagerInterface $em, EmailService $emailService, UrlGeneratorInterface $urlGenerator ): Response
     {
         $user = $this->getUser();
 
@@ -164,14 +181,20 @@ final class SortieController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        // Générer l'URL de la sortie créée
+        $sortieUrl = $urlGenerator->generate('app_sortie_details', ['id' => $sortie->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+
+        $emailService->sendEmail($user->getEmail(), 'Votre participation à la sortie', 'emails/template.html.twig', ['user' => $user, 'email_corps' => "<p>Vous êtes bien inscrit à la sortie <strong>" . $sortie->getNom() . "</strong> ! </p><p>Pour rappel, voici le lien vers la sortie : </p><p><a href='$sortieUrl'>$sortieUrl</a></p>"]);
         $sortie->addParticipant($user);
         $em->flush();
 
+        $this->addFlash('success', "Votre participation a bien été validée !");
         return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
     }
 
     #[Route('/sortie/{id}/remove-participant/{userId}', name: 'app_sortie_remove_participant', methods: ['POST'])]
-    public function removeParticipant(int $id, int $userId, SortieRepository $sortieRepository, EntityManagerInterface $entityManager): Response
+    public function removeParticipant(int $id, int $userId, SortieRepository $sortieRepository, EntityManagerInterface $entityManager, EmailService $emailService, UrlGeneratorInterface $urlGenerator): Response
     {
         $sortie = $sortieRepository->find($id);
         $user = $entityManager->getRepository(Utilisateur::class)->find($userId);
@@ -184,6 +207,15 @@ final class SortieController extends AbstractController
             $sortie->removeParticipant($user);
             $entityManager->flush();
         }
+
+        // Générer l'URL de la sortie créée
+        $sortieUrl = $urlGenerator->generate('app_sortie_details', ['id' => $sortie->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+
+        $emailService->sendEmail($user->getEmail(), 'Désinscription sortie', 'emails/template.html.twig', ['user' => $user, 'email_corps' => "<p>Vous êtes bien désinscrit de la sortie <strong>" . $sortie->getNom() . "</strong> ! </p><p>Pour rappel, voici le lien vers la sortie à laquelle vous ne souhaitez plus participer : </p><p><a href='$sortieUrl'>$sortieUrl</a></p>"]);
+
+
+        $this->addFlash('success', "Votre participation a bien été retirée !");
 
         return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
     }
