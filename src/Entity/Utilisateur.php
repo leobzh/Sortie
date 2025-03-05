@@ -51,7 +51,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank]
     #[PasswordStrength(['minScore' => 1])]
     private ?string $password = null;
 

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur {{ status_code }}{% endblock %}
+
+{% block body %}
+    <h1>Oups ! Une erreur est survenue ({{ status_code }})</h1>
+
+    {% if status_code == 500 %}
+        <p>Une erreur interne s'est produite sur le serveur.</p>
+    {% elseif status_code == 403 %}
+        <p>Vous n'avez pas l'autorisation d'accéder à cette page.</p>
+    {% else %}
+        <p>Une erreur inattendue s'est produite.</p>
+    {% endif %}
+
+    <a href="{{ path('app_main') }}">Retour à l'accueil</a>
+{% endblock %}

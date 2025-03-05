@@ -19,7 +19,7 @@ class LieuFixtures extends Fixture implements FixtureGroupInterface, DependentFi
 
         for ($i = 0; $i < 10; $i++) {
             $lieu = new Lieu();
-            $lieu->setNom($faker->word);
+            $lieu->setNom($faker->company);
             $lieu->setRue($faker->streetAddress);
             $lieu->setLatitude($faker->latitude(45.0, 50.0));
             $lieu->setLongitude($faker->longitude(-5.0, 5.0));
