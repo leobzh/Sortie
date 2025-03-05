@@ -21,6 +21,15 @@
         .sound-label {
             font-size: 0.9em;
         }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .action-group {
+            display: flex;
+            gap: 10px;
+        }
     </style>
 {% endblock %}
 
@@ -115,14 +124,6 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="{{ sortieForm.etat.vars.id }}">
-                    <i class="fas fa-clipboard-list"></i> {{ form_label(sortieForm.etat) }}
-                </label>
-                {{ form_widget(sortieForm.etat, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(sortieForm.etat) }}
-            </div>
-
-            <div class="form-group">
                 <label for="{{ sortieForm.site.vars.id }}">
                     <i class="fas fa-building"></i> {{ form_label(sortieForm.site) }}
                 </label>
@@ -155,6 +156,14 @@
             </label>
             {{ form_widget(sortieForm.infosSortie, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Informations complémentaires sur la sortie...'}}) }}
             {{ form_errors(sortieForm.infosSortie) }}
+        </div>
+
+        <div class="form-group">
+                <label for="{{ sortieForm.etat.vars.id }}">
+                    <i class="fas fa-clipboard-list"></i> {{ form_label(sortieForm.etat) }}
+                </label>
+                {{ form_widget(sortieForm.etat, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(sortieForm.etat) }}
         </div>
 
         <div class="form-group">
@@ -214,11 +223,19 @@
                 </button>
             </div>
 
-            {% if sortie.organisateur == app.user %}
-                <button type="button" id="deleteButton" class="btn-danger" onclick="handleDeleteSortie('{{ path('app_sortie_remove', {'id': sortie.id}) }}')">
-                    <i class="fas fa-trash-alt"></i> Supprimer la sortie
-                </button>
-            {% endif %}
+            <div class="action-group">
+                <form action="{{ path('app_sortie_annulation', {'id': sortie.id}) }}" method="POST" class="action-form">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Voulez-vous vraiment annuler cette sortie ?')">
+                        <i class="fas fa-times-circle"></i> Annuler la sortie
+                    </button>
+                </form>
+
+                {% if sortie.organisateur == app.user %}
+                    <button type="button" id="deleteButton" class="btn-danger" onclick="handleDeleteSortie('{{ path('app_sortie_archive', {'id': sortie.id}) }}')">
+                        <i class="fas fa-trash-alt"></i> Supprimer la sortie
+                    </button>
+                {% endif %}
+            </div>
         </div>
 
         {{ form_end(sortieForm) }}
