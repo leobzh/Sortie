@@ -215,3 +215,11 @@ body {
         flex-direction: column;
     }
 }
+
+#typing-text-1,
+#typing-text-2,
+#typing-text-3,
+#typing-text-4 {
+    display: inline-block;
+    white-space: pre-wrap;
+}
