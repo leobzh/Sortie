@@ -108,7 +108,7 @@ final class AdminDashboardController extends AbstractController
     {
         return $this->render('admin/listUtilisateur.html.twig', [
             'title' => 'Liste des utilisateurs',
-            'utilisateurs' => $em->getRepository(Utilisateur::class)->findAll(),
+            'utilisateurs' => $em->getRepository(Utilisateur::class)->findAllActive(),
         ]);
     }
 
@@ -126,5 +126,23 @@ final class AdminDashboardController extends AbstractController
             'success' => true,
             'isActif' => $utilisateur->isActif(),
         ]);
+    }
+
+    #[Route('/utilisateur/delete/{id}', name: 'delete_utilisateur', methods: ['POST'])]
+    public function softDeleteUtilisateur(Utilisateur $utilisateur, Request $request, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('delete' . $utilisateur->getId(), $request->request->get('token'))) {
+            $this->addFlash('danger', 'token invalide');
+            return $this->redirectToRoute('admin_list_utilisateur');
+        }
+
+        $utilisateur->setDeleteAt(new \DateTimeImmutable('now'));
+        $em->flush();
+
+        $this->addFlash('success', 'BAN effectuer avec succes');
+
+        return $this->redirectToRoute('admin_list_utilisateur');
     }
 }
