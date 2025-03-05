@@ -7,6 +7,7 @@ use App\Entity\Site;
 use App\Entity\Sortie;
 use App\Entity\Utilisateur;
 use App\Form\SortieCreationType;
+use App\Repository\EtatRepository;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use App\Repository\UtilisateurRepository;
@@ -34,39 +35,44 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/', name: 'app_sortie', methods: ['GET', 'POST'])]
-    public function recherche(Request $request, SortieRepository $sortiesRepository, SiteRepository $siteRepository, EmailService $emailService): Response
-    {
+    public function recherche(
+        Request $request,
+        SortieRepository $sortiesRepository,
+        SiteRepository $siteRepository,
+        EtatRepository $etatRepository
+    ): Response {
         $sites = $siteRepository->findAll();
-        $selectedSiteId = $request->request->get('site'); // ID du site via POST (ou '' pour "Tous les sites")
-        $nom = $request->request->get('nom'); // Nom via POST
-        $dateHeureDebut = $request->request->get('dateHeureDebut'); // Date début via POST
-        $dateLimiteInscription = $request->request->get('dateLimiteInscription'); // Date limite via POST
+        $selectedSiteId = $request->request->get('site');
+        $nom = $request->request->get('nom');
+        $dateHeureDebut = $request->request->get('dateHeureDebut');
+        $dateLimiteInscription = $request->request->get('dateLimiteInscription');
         $isOrganisateur = $request->request->get('isOrganisateur');
         $isInscrit = (bool)$request->request->get('isInscrit');
         $isNotInscrit = (bool)$request->request->get('isNotInscrit');
         $isEnded = (bool)$request->request->get('isEnded');
-
-
 
         // Construire les critères dynamiquement
         $criteria = [];
         if ($selectedSiteId) {
             $criteria['site'] = (int)$selectedSiteId; // Convertir en int pour Doctrine
         }
-        if($isOrganisateur) {
+        if ($isOrganisateur) {
             $criteria['organisateur'] = $this->getUser(); // YG : on passe l'id du connected user
         }
-
 
         // Appliquer les filtres si au moins un critère ou filtre manuel est défini
         if (!empty($criteria) || $nom || $dateHeureDebut || $dateLimiteInscription || $isInscrit || $isNotInscrit || $isEnded) {
             $sorties = $sortiesRepository->findByFilters($isInscrit, $isNotInscrit, $isEnded, $nom, $dateHeureDebut, $dateLimiteInscription, $criteria);
-
         } else {
             // Par défaut, toutes les sorties si pas de filtre
             $sorties = $sortiesRepository->findAll();
         }
 
+        // Récupérer les libellés des états
+        foreach ($sorties as $sortie) {
+            $etat = $etatRepository->find($sortie->getEtat()->getId());
+            $sortie->etatLibelle = $etat ? $etat->getLibelle() : 'Inconnu';
+        }
 
         return $this->render('sortie/index.html.twig', [
             'sorties' => $sorties,
@@ -79,10 +85,10 @@ final class SortieController extends AbstractController
             'isInscrit' => $isInscrit,
             'isNotInscrit' => $isNotInscrit,
             'isEnded' => $isEnded,
-
-
         ]);
     }
+
+
 
     // Creation d'une sortie
     #[Route('/Creation', name: 'app_sortie_creation')]
@@ -102,7 +108,7 @@ final class SortieController extends AbstractController
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()
         ) {
-            // Ajoutez à nouveau l'utilisateur connecté pour vous assurer qu'il est inclus
+            // Ajoutez à nouveau l'utilisateur connecté pour être sûr qu'il est inclus
             $sortie->addParticipant($this->getUser());
 
             $em->persist($sortie);
@@ -164,21 +170,45 @@ final class SortieController extends AbstractController
         ]);
     }
 
-
-    #[Route('/{id}/archive', name: 'app_sortie_archive', methods: ['GET', 'POST'])]
-    public function archive(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    // annuler une sortie
+    #[Route('/{id}/annuler', name: 'app_sortie_annulation', methods: ['POST'])]
+    public function annulation(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
     {
-        $etatArchive = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Archivé']);
+        // Récupérer l'état "CANCELLED"
+        $etatClosed = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'CANCELLED']);
 
-        if (!$etatArchive) {
-            throw $this->createNotFoundException('État "Archivé" non trouvé.');
+        if (!$etatClosed) {
+            throw $this->createNotFoundException('L\'état "CLOSED" n\'existe pas.');
         }
 
-        $sortie->setEtat($etatArchive);
-        $em->persist($sortie);
+        // Mettre à jour l'état de la sortie
+        $sortie->setEtat($etatClosed);
         $em->flush();
 
-        $this->addFlash('success', 'La sortie a bien été archivée.');
+        // Ajouter un message flash pour confirmer l'annulation
+        $this->addFlash('success', 'La sortie a été annulée avec succès.');
+
+        return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
+    }
+
+    // archiver une sortie
+    #[Route('/{id}/archiver', name: 'app_sortie_archive', methods: ['GET', 'POST'])]
+    public function archive(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        // Récupérer l'état "ARCHIVED"
+        $etatClosed = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'ARCHIVED']);
+
+        if (!$etatClosed) {
+            throw $this->createNotFoundException('L\'état "ARCHIVED" n\'existe pas.');
+        }
+
+        // Mettre à jour l'état de la sortie
+        $sortie->setEtat($etatClosed);
+        $em->flush();
+
+        // Ajouter un message flash pour confirmer l'annulation
+        $this->addFlash('success', 'La sortie a été annulée avec succès.');
+
         return $this->redirectToRoute('app_sortie_details', ['id' => $sortie->getId()]);
     }
 
