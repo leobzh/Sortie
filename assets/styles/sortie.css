@@ -31,8 +31,8 @@ body {
   background: white;
   border-radius: 20px;
   box-shadow: var(--shadow);
-  width: 90%;
-  max-width: 1500px;
+  width: 100%;
+  max-width: 1700px;
   padding: 2rem;
   margin: 2rem auto;
   animation: slideUp 0.5s ease-out;
