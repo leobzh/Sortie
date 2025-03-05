@@ -11,7 +11,11 @@
 {% block body %}
 <div class="register-container">
     <div class="register-header">
-        <h1>Inscription</h1>
+        {% if is_granted('ROLE_ADMIN') %}
+            <h1>Création Admin </h1>
+        {% else %}
+            <h1>Inscription</h1>
+        {% endif %}
     </div>
 
     {% for flash_error in app.flashes('verify_email_error') %}
@@ -72,10 +76,15 @@
             </div>
             {{ form_errors(registrationForm.agreeTerms) }}
         </div>
-
+    {% if is_granted('ROLE_ADMIN') %}
+    <button type="submit" class="btn">
+        <i class="fas fa-user-plus"></i> inscrire
+    </button>
+    {% else %}
         <button type="submit" class="btn">
             <i class="fas fa-user-plus"></i> S'inscrire
         </button>
+    {% endif %}
     {{ form_end(registrationForm) }}
 </div>
 {% endblock %}
