@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ asset('styles/lieu.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 {% endblock %}
-{% block title %}New Lieu{% endblock %}
 
 {% block body %}
     {{ include('lieu/_form.html.twig', {'form_title' : 'Nouveau lieu', 'button_label': 'Créer ce lieu !'}) }}

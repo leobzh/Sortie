@@ -23,6 +23,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/sortie')]
 final class SortieController extends AbstractController
 {
+
+    # YG : route de test pour event subscriber
+    #[Route('/subscriber', name: 'app_subscriber', methods: ['GET'])]
+    public function subscriber(SortieRepository $sortieRepository): Response
+    {
+        $sorties = $sortieRepository->findSortiesQuiDemarrent(new \DateTime());
+        return $this->render('sortie/subscriber.html.twig', [
+            'sorties' => $sorties,
+        ]);
+    }
+
     #[Route('/', name: 'app_sortie', methods: ['GET', 'POST'])]
     public function recherche(
         Request $request,
