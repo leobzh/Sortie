@@ -1,3 +1,15 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 .gradient-custom {
     /* fallback for old browsers */
     background: #f6d365;
@@ -6,11 +18,12 @@
     background: -webkit-linear-gradient(to right bottom, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
 
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right bottom, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+    background: linear-gradient(to right bottom, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
 }
 
 .container {
     max-width: 800px;
+    width: 100%;
     margin: 0 auto;
     padding: 20px;
     font-size: 1.1rem;
@@ -18,9 +31,69 @@
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
-.imgMod{
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 50%;
+
+main {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.site-footer {
+    background-color: var(--hf-bg-dark);
+    color: var(--hf-text-light);
+    padding: 3rem 0 1rem 0;
+    margin-top: auto;
+    flex-shrink: 0;
+    width: 100%;
+}
+
+/* Card adjustments */
+.card {
+    width: 100%;
+    overflow: hidden;
+}
+
+.card-body {
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        font-size: 1rem;
+    }
+
+    .imgMod {
+        width: 80px;
+        height: 80px;
+    }
+
+    .col-md-4,
+    .col-md-8 {
+        width: 100%;
+    }
+
+    .gradient-custom {
+        border-radius: .5rem .5rem 0 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .imgMod {
+        width: 60px;
+        height: 60px;
+    }
+
+    .card-body {
+        padding: 15px !important;
+    }
 }

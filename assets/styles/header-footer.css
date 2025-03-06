@@ -212,7 +212,7 @@
     font-size: 0.9rem;
 }
 
-/* ----- RESPONSIVE STYLES ----- */
+/* header-footer.css */
 @media (max-width: 768px) {
     .header-container {
         padding: 1rem;
@@ -269,8 +269,12 @@
     }
 }
 
-@media (min-width: 769px) {
-    .nav-links {
-        display: flex !important;
+@media (max-width: 480px) {
+    .header-container {
+        padding: 0.5rem;
+    }
+
+    .footer-container {
+        padding: 0.5rem;
     }
 }

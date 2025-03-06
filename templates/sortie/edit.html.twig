@@ -132,14 +132,12 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="{{ sortieForm.organisateur.vars.id }}">
-                    <i class="fas fa-user-tie"></i> {{ form_label(sortieForm.organisateur) }}
-                </label>
-                {{ form_widget(sortieForm.organisateur, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(sortieForm.organisateur) }}
-            </div>
+        <div class="form-organisateur">
+            <label for="{{ sortieForm.organisateur.vars.id }}">
+                <i class="fas fa-user"></i> {{ form_label(sortieForm.organisateur) }}
+            </label>
+            {{ form_widget(sortieForm.organisateur, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(sortieForm.organisateur) }}
         </div>
 
         <div class="form-group">
