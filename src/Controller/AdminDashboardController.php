@@ -110,6 +110,8 @@ final class AdminDashboardController extends AbstractController
     #[Route('/list_utilisateur', name: 'list_utilisateur')]
     public function listUserAdmin(EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         return $this->render('admin/listUtilisateur.html.twig', [
             'title' => 'Liste des utilisateurs',
             'utilisateurs' => $em->getRepository(Utilisateur::class)->findAllActive(),
@@ -183,6 +185,8 @@ final class AdminDashboardController extends AbstractController
     #[Route('/list_sortie', name: 'list_sortie')]
     public function listSortie(EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         return $this->render('admin/listSortie.html.twig', [
             'title' => 'Liste des sortie',
             'sorties' => $em->getRepository(Sortie::class)->findAll(),
@@ -209,6 +213,8 @@ final class AdminDashboardController extends AbstractController
     #[Route('/sortie/{id}/cancelled', name: 'delete_sortie', methods: ['POST'])]
     public function annulationAdmin(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $etatClosed = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'CANCELLED']);
 
         if (!$etatClosed) {
