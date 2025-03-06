@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Site;
+use App\Entity\Sortie;
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
+use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -176,4 +178,32 @@ final class AdminDashboardController extends AbstractController
 
         ]);
     }
+
+    #[Route('/list_sortie', name: 'list_sortie')]
+    public function listSortie(EntityManagerInterface $em): Response
+    {
+        return $this->render('admin/listSortie.html.twig', [
+            'title' => 'Liste des sortie',
+            'sorties' => $em->getRepository(Sortie::class)->findAll(),
+        ]);
+    }
+
+    #[Route('/sortie/{id}/delete', name: 'delete_sortie', methods: ['POST'])]
+    public function changeState(int $id, SortieRepository $sortieRepository, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $sortie = $sortieRepository->find($id);
+
+        if (!$sortie) {
+            throw $this->createNotFoundException('Sortie introuvable');
+        }
+        $em->remove($sortie);
+        $em->flush();
+
+        return $this->redirectToRoute('admin_list_sortie');
+
+    }
+
+
 }
