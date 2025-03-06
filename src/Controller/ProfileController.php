@@ -13,6 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Form\ApiKeyType;
 
 class ProfileController extends AbstractController
 {
@@ -127,7 +131,28 @@ class ProfileController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
+
+    #[Route('/profile/config-api-key', name: 'config_api_key')]
+    public function config(Request $request, UserInterface $user, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ApiKeyType::class, $user);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre clé API a été sauvegardée avec succès.');
+
+            return $this->redirectToRoute('config_api_key');
+        }
+
+        return $this->render('profile/config_api_key.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
+    }
 }
 
 

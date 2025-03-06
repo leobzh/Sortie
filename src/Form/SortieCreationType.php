@@ -42,10 +42,6 @@ class SortieCreationType extends AbstractType
             ->add('dateHeureDebut', DateTimeType::class, [
                 'widget' => 'single_text',
                 'label' => 'Date et heure de début',
-                'constraints' => [
-                    new NotBlank(['message' => 'La date et l\'heure de début sont obligatoires.']),
-                    new DateTimeConstraint(['message' => 'Veuillez entrer une date et une heure valides.'])
-                ]
             ])
             ->add('duree', IntegerType::class, [
                 'label' => 'Durée (en minutes)',
@@ -57,10 +53,6 @@ class SortieCreationType extends AbstractType
             ->add('dateLimiteInscription', DateTimeType::class, [
                 'widget' => 'single_text',
                 'label' => 'Date limite d\'inscription',
-                'constraints' => [
-                    new NotBlank(['message' => 'La date limite d\'inscription est obligatoire.']),
-                    new DateTimeConstraint(['message' => 'Veuillez entrer une date et une heure valides.'])
-                ]
             ])
             ->add('nbInscriptionsMax', IntegerType::class, [
                 'label' => 'Nombre maximum d\'inscriptions',

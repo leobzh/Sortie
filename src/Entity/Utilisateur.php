@@ -124,6 +124,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime_immutable',nullable: true)]
     private ?\DateTimeImmutable $deleteAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(groups: ['api_key_update'])]
+    #[Assert\Length(
+        min: 1,
+        minMessage: "Le prénom doit contenir au moins {{ limit }} caractères."
+    )]
+    private ?string $apiKey = null;
+
     public function __construct()
     {
         $this->sortiesOrganisees = new ArrayCollection();
@@ -380,6 +388,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDeleteAt(?\DateTimeImmutable $deleteAt): static
     {
         $this->deleteAt = $deleteAt;
+
+        return $this;
+    }
+
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey(?string $apiKey): static
+    {
+        $this->apiKey = $apiKey;
 
         return $this;
     }
