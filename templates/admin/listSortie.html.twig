@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/showVille.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> }
+    <style>
+        .etat-annule {
+            display: inline-block;
+            background-color: rgba(255, 0, 0, 0.1); /* Rouge clair */
+            color: red;
+            border: 2px solid red;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block title %}Liste de sortie !{% endblock %}
+
+{% block body %}
+    <div class="page-ville">
+        <h1>Utilisateur</h1>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Date de début</th>
+                <th>Durée</th>
+                <th>Lieu</th>
+                <th>Organisateur</th>
+                <th>Participants</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for sortie in sorties %}
+                <tr>
+                    <td data-label="Nom">{{ sortie.nom }}</td>
+                    <td data-label="Date de début">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                    <td data-label="Durée">{{ sortie.duree }} min</td>
+                    <td data-label="Lieu">{{ sortie.lieu.nom }}</td>
+                    <td data-label="Organisateur">{{ sortie.organisateur.nom }}</td>
+                    <td data-label="Participants">
+                        <span class="badge {% if sortie.participants|length >= sortie.nbInscriptionsMax %}badge-full{% endif %}">
+                            {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}</span>
+                    </td>
+                    <td data-label="Actions" class="{% if sortie.etat.libelle == 'CANCELLED' %}cancelled{% elseif sortie.etat.libelle == 'ARCHIVED' %}archived{% endif %}"
+                        data-status="{{ sortie.etat.libelle }}">
+                        {% if sortie.etat.libelle == 'CANCELLED' or sortie.etat.libelle == 'ARCHIVED' %}
+                            <span class="etat-annule">CANCELLED</span>
+                        {% else %}
+                            <div class="action-buttons">
+                                <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
+                                    <i class="fas fa-eye"></i></a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <form action="{{ path('admin_list_sortie', {'id': sortie.id}) }}" method="POST">
+                                        <button type="submit" class="btn-action"
+                                                onclick="return confirm('Voulez-vous vraiment annuler cette sortie ?')">
+                                            <i class="fas fa-times-circle"></i></button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-light"><i class="fas fa-arrow-left"></i></a>
+    </div>
+{% endblock %}
