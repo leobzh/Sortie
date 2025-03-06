@@ -1,0 +1,36 @@
+{# templates/profile/config_api_key.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/config.css') }}">
+{% endblock %}
+
+{% block title %}Configurer la clé API{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Configurer votre clé API</h1>
+
+        {# Affichage d'un message de succès ou d'erreur #}
+        {% if app.flashes('success') %}
+            <div class="alert alert-success">
+                {% for message in app.flashes('success') %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if app.flashes('error') %}
+            <div class="alert alert-danger">
+                {% for message in app.flashes('error') %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# Affichage du formulaire #}
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

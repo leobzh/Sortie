@@ -67,6 +67,11 @@
         {{ form_end(form) }}
     </form>
 
+    {# Ajouter le bouton pour aller à la page de configuration de la clé API #}
+    <a href="{{ path('config_api_key') }}" class="btn btn-warning">Configurer ma clé API</a>
+
+    <br><br>
+
     <br>
     <a href="{{ path('profile_index') }}" class="btn btn-secondary">Retour à mon profil</a>
 </div>

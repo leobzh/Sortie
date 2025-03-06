@@ -218,6 +218,9 @@
                                             <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            <a href="#" class="btn-action sync-calendar" data-id="{{ sortie.id }}" data-nom="{{ sortie.nom }}" data-date="{{ sortie.dateHeureDebut|date('Y-m-d\TH:i:s') }}" data-duree="{{ sortie.duree }}" data-lieu="{{ sortie.lieu.nom }}">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </a>
                                             {% if app.user == sortie.organisateur %}
                                                 <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}" class="btn-action">
                                                     <i class="fas fa-edit"></i>
@@ -318,6 +321,39 @@
 {% block javascripts %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll(".sync-calendar").forEach(button => {
+                button.addEventListener("click", function () {
+                    const eventId = this.dataset.id;
+                    const eventName = this.dataset.nom;
+                    const eventStart = this.dataset.date;
+                    const eventDuration = this.dataset.duree;
+                    const eventLocation = this.dataset.lieu;
+
+                    fetch("/sync-google-calendar", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token('sync_calendar') }}"
+                        },
+                        body: JSON.stringify({
+                            id: eventId,
+                            name: eventName,
+                            start: eventStart,
+                            duration: eventDuration,
+                            location: eventLocation
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Événement synchronisé avec Google Calendar !");
+                        } else {
+                            alert("Erreur lors de la synchronisation.");
+                        }
+                    })
+                    .catch(error => console.error("Erreur :", error));
+                });
+            });
             // Variables globales
             let currentDate = new Date();
             let selectedDate = new Date();
