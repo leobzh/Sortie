@@ -25,6 +25,7 @@
 
     <div class="form-container">
         {{ form_start(sortieForm) }}
+        {# {{ form_start(sortieForm, {'attr': {'novalidate': 'novalidate'}}) }} #}
         {{ form_row(sortieForm._token) }} <!-- Ajoutez cette ligne pour inclure le champ CSRF -->
 
         <div class="form-row">
@@ -118,6 +119,7 @@
             {{ form_widget(sortieForm.participants, {'attr': {'class': 'form-check'}}) }}
             {{ form_errors(sortieForm.participants) }}
         </div>
+
 
         <div class="form-group">
             <label for="{{ sortieForm.etat.vars.id }}">

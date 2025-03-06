@@ -20,18 +20,23 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom de la sortie ne peut pas être vide')]
+    #[Assert\Length(min: 3, max: 255, minMessage: 'Le nom doit comporter au moins 3 caractères', maxMessage: 'Le nom ne peut pas dépasser 255 caractères')]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: 'La date et l\'heure de début sont obligatoires')]
     private ?\DateTimeInterface $dateHeureDebut = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $duree = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: 'La date limite d\'inscription est obligatoire')]
     private ?\DateTimeInterface $dateLimiteInscription = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(0, message: 'Le nombre d\'inscriptions maximum doit être supérieur à 0')]
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(length: 500, nullable: true)]
@@ -39,18 +44,22 @@ class Sortie
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotNull(message: 'Le lieu est obligatoire')]
     private ?Lieu $lieu = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'L\'état de la sortie est obligatoire')]
     private ?Etat $etat = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotNull(message: 'Le site est obligatoire')]
     private ?Site $site = null;
 
     #[ORM\ManyToOne(inversedBy: 'sortiesOrganisees')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'L\'organisateur est obligatoire')]
     private ?Utilisateur $organisateur = null;
 
     /**
@@ -126,7 +135,7 @@ class Sortie
     {
         $this->nbInscriptionsMax = $nbInscriptionsMax;
 
-       return $this;
+        return $this;
     }
 
     public function getInfosSortie(): ?string

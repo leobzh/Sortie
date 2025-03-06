@@ -202,17 +202,37 @@ body {
     margin-top: 2rem;
 }
 
+/* accueil.css */
 @media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
     .features {
         grid-template-columns: 1fr;
     }
-    
-    .header h1 {
-        font-size: 2.5rem;
-    }
-    
+
     .cta-section {
         flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.75rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .feature-card {
+        padding: 1rem;
     }
 }
 
