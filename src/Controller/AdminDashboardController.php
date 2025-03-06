@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Site;
+use App\Entity\Sortie;
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
+use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -105,7 +108,7 @@ final class AdminDashboardController extends AbstractController
     }
 
     #[Route('/list_utilisateur', name: 'list_utilisateur')]
-    public function list(EntityManagerInterface $em): Response
+    public function listUserAdmin(EntityManagerInterface $em): Response
     {
         return $this->render('admin/listUtilisateur.html.twig', [
             'title' => 'Liste des utilisateurs',
@@ -176,4 +179,51 @@ final class AdminDashboardController extends AbstractController
 
         ]);
     }
+
+    #[Route('/list_sortie', name: 'list_sortie')]
+    public function listSortie(EntityManagerInterface $em): Response
+    {
+        return $this->render('admin/listSortie.html.twig', [
+            'title' => 'Liste des sortie',
+            'sorties' => $em->getRepository(Sortie::class)->findAll(),
+        ]);
+    }
+
+    /*#[Route('/sortie/{id}/delete', name: 'delete_sortie', methods: ['POST'])]
+    public function changeState(int $id, SortieRepository $sortieRepository, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $sortie = $sortieRepository->find($id);
+
+        if (!$sortie) {
+            throw $this->createNotFoundException('Sortie introuvable');
+        }
+        $em->remove($sortie);
+        $em->flush();
+
+        return $this->redirectToRoute('admin_list_sortie');
+
+    }*/
+
+    #[Route('/sortie/{id}/cancelled', name: 'delete_sortie', methods: ['POST'])]
+    public function annulationAdmin(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $etatClosed = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'CANCELLED']);
+
+        if (!$etatClosed) {
+            throw $this->createNotFoundException('L\'état "CLOSED" n\'existe pas.');
+        }
+
+        // Mettre à jour l'état de la sortie
+        $sortie->setEtat($etatClosed);
+        $em->flush();
+
+        // Ajouter un message flash pour confirmer l'annulation
+        $this->addFlash('success', 'La sortie a été annulée avec succès.');
+
+        return $this->redirectToRoute('admin_list_sortie');
+    }
+
+
 }
