@@ -59,7 +59,7 @@
                                 <a href="{{ path('app_sortie_details', {'id': sortie.id}) }}" class="btn-action">
                                     <i class="fas fa-eye"></i></a>
                                 {% if is_granted('ROLE_ADMIN') %}
-                                    <form action="{{ path('admin_list_sortie', {'id': sortie.id}) }}" method="POST">
+                                    <form action="{{ path('admin_cancel_sortie', {'id': sortie.id}) }}" method="POST">
                                         <button type="submit" class="btn-action"
                                                 onclick="return confirm('Voulez-vous vraiment annuler cette sortie ?')">
                                             <i class="fas fa-times-circle"></i></button>
