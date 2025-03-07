@@ -108,7 +108,7 @@ final class AdminDashboardController extends AbstractController
     }
 
     #[Route('/list_utilisateur', name: 'list_utilisateur')]
-    public function listUserAdmin(EntityManagerInterface $em): Response
+    public function list(EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
@@ -210,15 +210,15 @@ final class AdminDashboardController extends AbstractController
 
     }*/
 
-    #[Route('/sortie/{id}/cancelled', name: 'delete_sortie', methods: ['POST'])]
-    public function annulationAdmin(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    #[Route('/sortie/{id}/cancelled', name: 'cancel_sortie', methods: ['POST'])]
+    public function cancelAdmin(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $etatClosed = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'CANCELLED']);
 
         if (!$etatClosed) {
-            throw $this->createNotFoundException('L\'état "CLOSED" n\'existe pas.');
+            throw $this->createNotFoundException('L\'état "CANCELLED" n\'existe pas.');
         }
 
         // Mettre à jour l'état de la sortie
